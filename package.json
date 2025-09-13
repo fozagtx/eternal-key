@@ -1,26 +1,43 @@
 {
-  "name": "key",
-  "version": "0.1.0",
+  "name": "crypto-inheritance-system",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
-    "lint": "biome check",
-    "format": "biome format --write"
+    "lint": "next lint",
+    "compile": "bunx hardhat compile",
+    "test": "bunx hardhat test",
+    "deploy": "bunx hardhat run scripts/deploy.js --network somnia",
+    "verify": "bunx hardhat verify --network somnia"
   },
   "dependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.5.3"
-  },
-  "devDependencies": {
-    "typescript": "^5",
+    "@headlessui/react": "^2.0.0",
+    "@heroicons/react": "^2.0.18",
+    "@rainbow-me/rainbowkit": "^2.0.0",
+    "@tanstack/react-query": "^5.17.15",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
+    "date-fns": "^3.2.0",
+    "next": "15.5.3",
+    "pino-pretty": "^13.1.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hot-toast": "^2.4.1",
     "tailwindcss": "^4",
-    "@biomejs/biome": "2.2.0"
+    "typescript": "^5",
+    "viem": "^2.7.15",
+    "wagmi": "^2.5.7"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.0",
+    "hardhat": "^2.19.4",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.3",
+    "@openzeppelin/contracts": "^5.0.1",
+    "eslint": "8.56.0",
+    "eslint-config-next": "14.0.4"
   }
 }
