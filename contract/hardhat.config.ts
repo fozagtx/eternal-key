@@ -1,41 +1,70 @@
-import type { HardhatUserConfig } from "hardhat/config";
-
-import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
-import { configVariable } from "hardhat/config";
+import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-verify";
+import "dotenv/config";
 
 const config: HardhatUserConfig = {
-  plugins: [hardhatToolboxViemPlugin],
   solidity: {
-    profiles: {
-      default: {
-        version: "0.8.28",
+    version: "0.8.24",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
       },
-      production: {
-        version: "0.8.28",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
-        },
-      },
+      viaIR: true,
     },
   },
   networks: {
-    hardhatMainnet: {
-      type: "edr-simulated",
-      chainType: "l1",
+    hardhat: {
+      chainId: 31337,
     },
-    hardhatOp: {
-      type: "edr-simulated",
-      chainType: "op",
+    localhost: {
+      url: "http://127.0.0.1:8545",
     },
-    sepolia: {
-      type: "http",
-      chainType: "l1",
-      url: configVariable("SEPOLIA_RPC_URL"),
-      accounts: [configVariable("SEPOLIA_PRIVATE_KEY")],
+    "somnia-testnet": {
+      url: "https://testnet.somnia.network",
+      chainId: 30380,
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
+    "somnia-mainnet": {
+      url: "https://rpc.somnia.network",
+      chainId: 30380,
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    },
+  },
+  etherscan: {
+    apiKey: {
+      "somnia-testnet": "placeholder",
+      "somnia-mainnet": "placeholder",
+    },
+    customChains: [
+      {
+        network: "somnia-testnet",
+        chainId: 30380,
+        urls: {
+          apiURL: "https://testnet-explorer.somnia.network/api",
+          browserURL: "https://testnet-explorer.somnia.network",
+        },
+      },
+      {
+        network: "somnia-mainnet",
+        chainId: 30380,
+        urls: {
+          apiURL: "https://explorer.somnia.network/api",
+          browserURL: "https://explorer.somnia.network",
+        },
+      },
+    ],
+  },
+  paths: {
+    sources: "./contracts",
+    tests: "./test",
+    cache: "./cache",
+    artifacts: "./artifacts",
+  },
+  typechain: {
+    outDir: "./typechain-types",
+    target: "ethers-v6",
   },
 };
 
