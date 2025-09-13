@@ -11,7 +11,7 @@ interface GetStartedButtonProps {
   disabled?: boolean;
 }
 
-export function GetStartedButton({
+export function Button({
   onClick,
   children = "Get Started",
   className,
@@ -40,7 +40,7 @@ export function GetStartedButton({
         disabled
           ? "cursor-not-allowed opacity-50"
           : "cursor-pointer hover:brightness-95",
-        className
+        className,
       )}
       onClick={handleClick}
       onMouseEnter={() => !disabled && setIsHovered(true)}
@@ -56,7 +56,7 @@ export function GetStartedButton({
       <div
         className={cn(
           "flex items-center gap-1.5 bg-gradient-to-r from-[#2567EC] to-[#37B6F7] rounded-[0.8rem] relative shadow-[0_1px_3px_0px_rgba(0,0,0,0.65)] font-medium",
-          sizeClasses[size]
+          sizeClasses[size],
         )}
       >
         <span className="z-50">{children}</span>

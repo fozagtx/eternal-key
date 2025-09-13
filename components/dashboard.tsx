@@ -3,6 +3,7 @@
 import { useAccount, useDisconnect } from "wagmi";
 import { ConnectKitButton } from "connectkit";
 import { cn } from "@/lib/utils";
+import { DatePickerDemo } from "@/components/date-picker";
 
 export function Dashboard() {
   const { address, isConnected } = useAccount();
@@ -34,7 +35,9 @@ export function Dashboard() {
           <div className="flex items-center gap-4">
             <div className="flex flex-col items-end">
               <p className="text-sm text-muted-foreground">Connected Wallet</p>
-              <p className="font-mono text-sm font-medium">{formatAddress(address)}</p>
+              <p className="font-mono text-sm font-medium">
+                {formatAddress(address)}
+              </p>
             </div>
             <ConnectKitButton />
           </div>
@@ -50,7 +53,9 @@ export function Dashboard() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold">Inheritance Vaults</h3>
-                <p className="text-sm text-muted-foreground">Manage your digital assets</p>
+                <p className="text-sm text-muted-foreground">
+                  Manage your digital assets
+                </p>
               </div>
             </div>
             <div className="space-y-3">
@@ -76,7 +81,9 @@ export function Dashboard() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold">Beneficiaries</h3>
-                <p className="text-sm text-muted-foreground">Manage inheritance recipients</p>
+                <p className="text-sm text-muted-foreground">
+                  Manage inheritance recipients
+                </p>
               </div>
             </div>
             <div className="space-y-3">
@@ -102,7 +109,9 @@ export function Dashboard() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold">Governance</h3>
-                <p className="text-sm text-muted-foreground">Participate in decisions</p>
+                <p className="text-sm text-muted-foreground">
+                  Participate in decisions
+                </p>
               </div>
             </div>
             <div className="space-y-3">
@@ -121,11 +130,22 @@ export function Dashboard() {
           </div>
         </div>
 
+        {/* Date Picker Section */}
+        <div className="bg-card border border-border rounded-lg p-6 mb-8">
+          <h3 className="text-lg font-semibold mb-4">Schedule Check-in Date</h3>
+          <div className="max-w-sm">
+            <DatePickerDemo />
+          </div>
+        </div>
+
         {/* Activity Feed */}
         <div className="bg-card border border-border rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
           <div className="text-center py-12 text-muted-foreground">
-            <p>No activity yet. Create your first inheritance vault to get started.</p>
+            <p>
+              No activity yet. Create your first inheritance vault to get
+              started.
+            </p>
           </div>
         </div>
       </div>
