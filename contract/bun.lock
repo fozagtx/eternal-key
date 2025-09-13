@@ -1,0 +1,14 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "contract",
+      "devDependencies": {
+        "forge-std": "github:foundry-rs/forge-std#v1.9.4",
+      },
+    },
+  },
+  "packages": {
+    "forge-std": ["forge-std@github:foundry-rs/forge-std#1eea5ba", {}, "foundry-rs-forge-std-1eea5ba"],
+  }
+}
