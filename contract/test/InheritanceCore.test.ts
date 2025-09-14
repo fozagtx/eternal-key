@@ -21,6 +21,7 @@ describe("InheritanceCore", function () {
   const BASIS_POINTS = 10000;
   const FIFTEEN_SECONDS = 15;
   const THIRTY_SECONDS = 30;
+  const ONE_WEEK = 7 * 24 * 60 * 60; // 7 days in seconds
 
   beforeEach(async function () {
     [owner, executor, beneficiary1, beneficiary2, otherAccount] =

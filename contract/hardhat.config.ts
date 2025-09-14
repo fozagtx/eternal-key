@@ -5,7 +5,7 @@ import "dotenv/config";
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.24",
+    version: "0.8.28", // Updated to Somnia recommended version
     settings: {
       optimizer: {
         enabled: true,
@@ -21,15 +21,20 @@ const config: HardhatUserConfig = {
     localhost: {
       url: "http://127.0.0.1:8545",
     },
+    // Updated Somnia network configurations per official docs
     "somnia-testnet": {
-      url: "https://testnet.somnia.network",
-      chainId: 30380,
+      url: "https://dream-rpc.somnia.network", // Updated RPC endpoint
+      chainId: 50312, // Updated chain ID
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      gasPrice: "auto",
+      gas: "auto",
     },
     "somnia-mainnet": {
-      url: "https://rpc.somnia.network",
-      chainId: 30380,
+      url: "https://dream-rpc.somnia.network", // Updated RPC endpoint
+      chainId: 50312, // Updated chain ID
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      gasPrice: "auto",
+      gas: "auto",
     },
   },
   etherscan: {
@@ -40,18 +45,18 @@ const config: HardhatUserConfig = {
     customChains: [
       {
         network: "somnia-testnet",
-        chainId: 30380,
+        chainId: 50312, // Updated chain ID
         urls: {
-          apiURL: "https://testnet-explorer.somnia.network/api",
-          browserURL: "https://testnet-explorer.somnia.network",
+          apiURL: "https://shannon-explorer.somnia.network/api", // Updated explorer API
+          browserURL: "https://shannon-explorer.somnia.network", // Updated explorer URL
         },
       },
       {
         network: "somnia-mainnet",
-        chainId: 30380,
+        chainId: 50312, // Updated chain ID
         urls: {
-          apiURL: "https://explorer.somnia.network/api",
-          browserURL: "https://explorer.somnia.network",
+          apiURL: "https://shannon-explorer.somnia.network/api", // Updated explorer API
+          browserURL: "https://shannon-explorer.somnia.network", // Updated explorer URL
         },
       },
     ],
