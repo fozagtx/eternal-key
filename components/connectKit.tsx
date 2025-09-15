@@ -30,7 +30,7 @@ export function GetStartedButton({
           type="button"
           className={cn(
             "flex items-center gap-1.5 bg-[#38BDF8] text-white rounded-md px-[0.12rem] py-[0.12rem] transition-all duration-200 cursor-pointer hover:brightness-95",
-            className
+            className,
           )}
           onClick={show}
           onMouseEnter={() => setIsHovered(true)}
@@ -45,7 +45,7 @@ export function GetStartedButton({
           <div
             className={cn(
               "flex items-center gap-1.5 bg-gradient-to-r from-[#2567EC] to-[#37B6F7] rounded-[0.8rem] relative shadow-[0_1px_3px_0px_rgba(0,0,0,0.65)] font-medium",
-              sizeClasses[size]
+              sizeClasses[size],
             )}
           >
             <span className="z-50">{children}</span>

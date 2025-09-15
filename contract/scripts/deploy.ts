@@ -14,14 +14,13 @@ async function main() {
   console.log("Deploying contracts with account:", deployer.address);
   console.log(
     "Account balance:",
-    ethers.formatEther(await ethers.provider.getBalance(deployer.address))
+    ethers.formatEther(await ethers.provider.getBalance(deployer.address)),
   );
 
   // Deploy InheritanceCore
   console.log("\n🚀 Deploying InheritanceCore...");
-  const InheritanceCoreFactory = await ethers.getContractFactory(
-    "InheritanceCore"
-  );
+  const InheritanceCoreFactory =
+    await ethers.getContractFactory("InheritanceCore");
   const inheritanceCore: InheritanceCore =
     await InheritanceCoreFactory.deploy();
   await inheritanceCore.waitForDeployment();
@@ -31,9 +30,8 @@ async function main() {
 
   // Deploy EmergencyManager
   console.log("\n🚀 Deploying EmergencyManager...");
-  const EmergencyManagerFactory = await ethers.getContractFactory(
-    "EmergencyManager"
-  );
+  const EmergencyManagerFactory =
+    await ethers.getContractFactory("EmergencyManager");
   const emergencyManager: EmergencyManager =
     await EmergencyManagerFactory.deploy();
   await emergencyManager.waitForDeployment();
@@ -98,20 +96,20 @@ async function main() {
     if (network.name.includes("testnet")) {
       console.log(
         "InheritanceCore:",
-        `https://testnet-explorer.somnia.network/address/${inheritanceCoreAddress}`
+        `https://testnet-explorer.somnia.network/address/${inheritanceCoreAddress}`,
       );
       console.log(
         "EmergencyManager:",
-        `https://testnet-explorer.somnia.network/address/${emergencyManagerAddress}`
+        `https://testnet-explorer.somnia.network/address/${emergencyManagerAddress}`,
       );
     } else {
       console.log(
         "InheritanceCore:",
-        `https://explorer.somnia.network/address/${inheritanceCoreAddress}`
+        `https://explorer.somnia.network/address/${inheritanceCoreAddress}`,
       );
       console.log(
         "EmergencyManager:",
-        `https://explorer.somnia.network/address/${emergencyManagerAddress}`
+        `https://explorer.somnia.network/address/${emergencyManagerAddress}`,
       );
     }
 
@@ -119,7 +117,7 @@ async function main() {
     console.log("1. Verify contracts on Somnia explorer");
     console.log("2. Update frontend configuration with deployed addresses");
     console.log(
-      "3. Test inheritance creation with 15-second timing on testnet"
+      "3. Test inheritance creation with 15-second timing on testnet",
     );
     console.log("4. Use setTestingMode() for rapid development iterations");
     console.log("5. Switch to setProductionMode() before mainnet deployment");
@@ -138,12 +136,12 @@ async function main() {
   console.log(
     "InheritanceCore deployment:",
     inheritanceCoreReceipt?.gasUsed.toString(),
-    "gas"
+    "gas",
   );
   console.log(
     "EmergencyManager deployment:",
     emergencyManagerReceipt?.gasUsed.toString(),
-    "gas"
+    "gas",
   );
 
   const totalGas =

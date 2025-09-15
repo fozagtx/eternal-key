@@ -5,7 +5,10 @@ async function main() {
 
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
-  console.log("Account balance:", (await deployer.provider.getBalance(deployer.address)).toString());
+  console.log(
+    "Account balance:",
+    (await deployer.provider.getBalance(deployer.address)).toString(),
+  );
 
   // Deploy TimingManager first
   console.log("\n1. Deploying TimingManager...");
@@ -36,7 +39,8 @@ async function main() {
 
   // Set TimingManager in InheritanceCore
   console.log("Setting TimingManager in InheritanceCore...");
-  const setTimingManagerTx = await inheritanceCore.setTimingManager(timingManagerAddress);
+  const setTimingManagerTx =
+    await inheritanceCore.setTimingManager(timingManagerAddress);
   await setTimingManagerTx.wait();
   console.log("TimingManager set successfully");
 
@@ -46,7 +50,9 @@ async function main() {
     const timingConfig = await inheritanceCore.getInheritanceTiming(0);
     console.log("Verification successful - contracts are properly linked");
   } catch (error) {
-    console.log("Note: Inheritance timing config not set (expected for new deployment)");
+    console.log(
+      "Note: Inheritance timing config not set (expected for new deployment)",
+    );
   }
 
   console.log("\n🎉 Deployment completed successfully!");
@@ -64,9 +70,15 @@ async function main() {
   console.log(`   EmergencyManager: '${emergencyManagerAddress}' as Address,`);
 
   console.log("\n2. Verify contracts on Shannon Explorer:");
-  console.log(`   npx hardhat verify --network somnia-testnet ${inheritanceCoreAddress}`);
-  console.log(`   npx hardhat verify --network somnia-testnet ${timingManagerAddress}`);
-  console.log(`   npx hardhat verify --network somnia-testnet ${emergencyManagerAddress}`);
+  console.log(
+    `   npx hardhat verify --network somnia-testnet ${inheritanceCoreAddress}`,
+  );
+  console.log(
+    `   npx hardhat verify --network somnia-testnet ${timingManagerAddress}`,
+  );
+  console.log(
+    `   npx hardhat verify --network somnia-testnet ${emergencyManagerAddress}`,
+  );
 
   console.log("\n3. Fund the deployer account with STT tokens for gas");
   console.log("4. Test the deployment through the frontend");
@@ -74,7 +86,7 @@ async function main() {
   return {
     inheritanceCore: inheritanceCoreAddress,
     timingManager: timingManagerAddress,
-    emergencyManager: emergencyManagerAddress
+    emergencyManager: emergencyManagerAddress,
   };
 }
 

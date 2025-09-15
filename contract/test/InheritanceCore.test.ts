@@ -27,15 +27,13 @@ describe("InheritanceCore", function () {
     [owner, executor, beneficiary1, beneficiary2, otherAccount] =
       await ethers.getSigners();
 
-    const InheritanceCoreFactory = await ethers.getContractFactory(
-      "InheritanceCore"
-    );
+    const InheritanceCoreFactory =
+      await ethers.getContractFactory("InheritanceCore");
     inheritanceCore = await InheritanceCoreFactory.deploy();
     await inheritanceCore.waitForDeployment();
 
-    const EmergencyManagerFactory = await ethers.getContractFactory(
-      "EmergencyManager"
-    );
+    const EmergencyManagerFactory =
+      await ethers.getContractFactory("EmergencyManager");
     emergencyManager = await EmergencyManagerFactory.deploy();
     await emergencyManager.waitForDeployment();
   });
@@ -58,7 +56,7 @@ describe("InheritanceCore", function () {
         name,
         executor.address,
         false,
-        timeLock
+        timeLock,
       );
 
       await expect(tx)
@@ -83,7 +81,12 @@ describe("InheritanceCore", function () {
       };
 
       await expect(
-        inheritanceCore.createInheritance("", executor.address, false, timeLock)
+        inheritanceCore.createInheritance(
+          "",
+          executor.address,
+          false,
+          timeLock,
+        ),
       ).to.be.revertedWith("Name cannot be empty");
     });
 
@@ -102,8 +105,8 @@ describe("InheritanceCore", function () {
           "Test",
           ethers.ZeroAddress,
           false,
-          timeLock
-        )
+          timeLock,
+        ),
       ).to.be.revertedWith("Invalid executor address");
     });
   });
@@ -125,7 +128,7 @@ describe("InheritanceCore", function () {
         "Test",
         executor.address,
         false,
-        timeLock
+        timeLock,
       );
       inheritanceId = 0;
     });
@@ -135,28 +138,28 @@ describe("InheritanceCore", function () {
         inheritanceCore.addBeneficiary(
           inheritanceId,
           beneficiary1.address,
-          6000
-        ) // 60%
+          6000,
+        ), // 60%
       ).to.emit(inheritanceCore, "BeneficiaryAdded");
 
       await expect(
         inheritanceCore.addBeneficiary(
           inheritanceId,
           beneficiary2.address,
-          4000
-        ) // 40%
+          4000,
+        ), // 40%
       ).to.emit(inheritanceCore, "BeneficiaryAdded");
 
       const ben1 = await inheritanceCore.getBeneficiaryInfo(
         inheritanceId,
-        beneficiary1.address
+        beneficiary1.address,
       );
       expect(ben1.allocationBasisPoints).to.equal(6000);
       expect(ben1.isActive).to.be.true;
 
       const ben2 = await inheritanceCore.getBeneficiaryInfo(
         inheritanceId,
-        beneficiary2.address
+        beneficiary2.address,
       );
       expect(ben2.allocationBasisPoints).to.equal(4000);
       expect(ben2.isActive).to.be.true;
@@ -166,15 +169,15 @@ describe("InheritanceCore", function () {
       await inheritanceCore.addBeneficiary(
         inheritanceId,
         beneficiary1.address,
-        6000
+        6000,
       );
 
       await expect(
         inheritanceCore.addBeneficiary(
           inheritanceId,
           beneficiary2.address,
-          5000
-        ) // Would total 110%
+          5000,
+        ), // Would total 110%
       ).to.be.revertedWithCustomError(inheritanceCore, "InvalidBasisPoints");
     });
 
@@ -182,30 +185,30 @@ describe("InheritanceCore", function () {
       await inheritanceCore.addBeneficiary(
         inheritanceId,
         beneficiary1.address,
-        5000
+        5000,
       );
 
       await expect(
         inheritanceCore.addBeneficiary(
           inheritanceId,
           beneficiary1.address,
-          3000
-        )
+          3000,
+        ),
       ).to.be.revertedWithCustomError(
         inheritanceCore,
-        "BeneficiaryAlreadyExists"
+        "BeneficiaryAlreadyExists",
       );
     });
 
     it("Should reject owner as beneficiary", async function () {
       await expect(
-        inheritanceCore.addBeneficiary(inheritanceId, owner.address, 5000)
+        inheritanceCore.addBeneficiary(inheritanceId, owner.address, 5000),
       ).to.be.revertedWith("Owner cannot be beneficiary");
     });
 
     it("Should reject zero allocation", async function () {
       await expect(
-        inheritanceCore.addBeneficiary(inheritanceId, beneficiary1.address, 0)
+        inheritanceCore.addBeneficiary(inheritanceId, beneficiary1.address, 0),
       ).to.be.revertedWithCustomError(inheritanceCore, "InvalidBasisPoints");
     });
   });
@@ -227,7 +230,7 @@ describe("InheritanceCore", function () {
         "Test",
         executor.address,
         false,
-        timeLock
+        timeLock,
       );
       inheritanceId = 0;
     });
@@ -243,19 +246,18 @@ describe("InheritanceCore", function () {
         .withArgs(inheritanceId, 0, ethers.ZeroAddress, depositAmount, []);
 
       const contractBalance = await ethers.provider.getBalance(
-        inheritanceCore.target
+        inheritanceCore.target,
       );
       expect(contractBalance).to.equal(depositAmount);
 
-      const inheritanceData = await inheritanceCore.getInheritanceData(
-        inheritanceId
-      );
+      const inheritanceData =
+        await inheritanceCore.getInheritanceData(inheritanceId);
       expect(inheritanceData.totalETHDeposited).to.equal(depositAmount);
     });
 
     it("Should reject zero ETH deposit", async function () {
       await expect(
-        inheritanceCore.depositETH(inheritanceId, { value: 0 })
+        inheritanceCore.depositETH(inheritanceId, { value: 0 }),
       ).to.be.revertedWith("Must deposit positive amount");
     });
 
@@ -264,7 +266,7 @@ describe("InheritanceCore", function () {
         owner.sendTransaction({
           to: inheritanceCore.target,
           value: ethers.parseEther("1.0"),
-        })
+        }),
       ).to.be.revertedWith("Use depositETH function");
     });
   });
@@ -286,14 +288,14 @@ describe("InheritanceCore", function () {
         "Test",
         executor.address,
         false,
-        timeLock
+        timeLock,
       );
       inheritanceId = 0;
 
       await inheritanceCore.addBeneficiary(
         inheritanceId,
         beneficiary1.address,
-        10000
+        10000,
       );
       await inheritanceCore.depositETH(inheritanceId, {
         value: ethers.parseEther("1.0"),
@@ -305,22 +307,21 @@ describe("InheritanceCore", function () {
         .to.emit(inheritanceCore, "InheritanceTriggered")
         .withArgs(inheritanceId, owner.address, await time.latest());
 
-      const inheritanceData = await inheritanceCore.getInheritanceData(
-        inheritanceId
-      );
+      const inheritanceData =
+        await inheritanceCore.getInheritanceData(inheritanceId);
       expect(inheritanceData.status).to.equal(1); // TRIGGERED
       expect(inheritanceData.triggeredAt).to.be.gt(0);
     });
 
     it("Should allow executor to trigger inheritance", async function () {
       await expect(
-        inheritanceCore.connect(executor).triggerInheritance(inheritanceId)
+        inheritanceCore.connect(executor).triggerInheritance(inheritanceId),
       ).to.emit(inheritanceCore, "InheritanceTriggered");
     });
 
     it("Should reject unauthorized trigger", async function () {
       await expect(
-        inheritanceCore.connect(otherAccount).triggerInheritance(inheritanceId)
+        inheritanceCore.connect(otherAccount).triggerInheritance(inheritanceId),
       ).to.be.revertedWith("Unauthorized to trigger inheritance");
     });
 
@@ -338,12 +339,12 @@ describe("InheritanceCore", function () {
         "Empty",
         executor.address,
         false,
-        timeLock
+        timeLock,
       );
       const emptyInheritanceId = 1;
 
       await expect(
-        inheritanceCore.triggerInheritance(emptyInheritanceId)
+        inheritanceCore.triggerInheritance(emptyInheritanceId),
       ).to.be.revertedWith("No beneficiaries added");
     });
   });
@@ -366,19 +367,19 @@ describe("InheritanceCore", function () {
         "Test",
         executor.address,
         false,
-        timeLock
+        timeLock,
       );
       inheritanceId = 0;
 
       await inheritanceCore.addBeneficiary(
         inheritanceId,
         beneficiary1.address,
-        6000
+        6000,
       ); // 60%
       await inheritanceCore.addBeneficiary(
         inheritanceId,
         beneficiary2.address,
-        4000
+        4000,
       ); // 40%
       await inheritanceCore.depositETH(inheritanceId, { value: depositAmount });
       await inheritanceCore.triggerInheritance(inheritanceId);
@@ -386,18 +387,18 @@ describe("InheritanceCore", function () {
 
     it("Should allow beneficiaries to claim their ETH share", async function () {
       const ben1InitialBalance = await ethers.provider.getBalance(
-        beneficiary1.address
+        beneficiary1.address,
       );
       const expectedAmount = (depositAmount * 6000n) / 10000n; // 60% of 2 ETH = 1.2 ETH
 
       const claimableBefore = await inheritanceCore.getClaimableETH(
         inheritanceId,
-        beneficiary1.address
+        beneficiary1.address,
       );
       expect(claimableBefore).to.equal(expectedAmount);
 
       await expect(
-        inheritanceCore.connect(beneficiary1).claimAssets(inheritanceId)
+        inheritanceCore.connect(beneficiary1).claimAssets(inheritanceId),
       )
         .to.emit(inheritanceCore, "AssetClaimed")
         .withArgs(
@@ -407,24 +408,24 @@ describe("InheritanceCore", function () {
           ethers.ZeroAddress,
           expectedAmount,
           [],
-          await time.latest()
+          await time.latest(),
         );
 
       const ben1FinalBalance = await ethers.provider.getBalance(
-        beneficiary1.address
+        beneficiary1.address,
       );
       expect(ben1FinalBalance).to.be.gt(ben1InitialBalance);
 
       const claimableAfter = await inheritanceCore.getClaimableETH(
         inheritanceId,
-        beneficiary1.address
+        beneficiary1.address,
       );
       expect(claimableAfter).to.equal(0);
     });
 
     it("Should prevent non-beneficiaries from claiming", async function () {
       await expect(
-        inheritanceCore.connect(otherAccount).claimAssets(inheritanceId)
+        inheritanceCore.connect(otherAccount).claimAssets(inheritanceId),
       ).to.be.revertedWithCustomError(inheritanceCore, "BeneficiaryNotFound");
     });
 
@@ -442,24 +443,24 @@ describe("InheritanceCore", function () {
         "Test2",
         executor.address,
         false,
-        timeLock
+        timeLock,
       );
       const newInheritanceId = 1;
 
       await inheritanceCore.addBeneficiary(
         newInheritanceId,
         beneficiary1.address,
-        10000
+        10000,
       );
       await inheritanceCore.depositETH(newInheritanceId, {
         value: ethers.parseEther("1.0"),
       });
 
       await expect(
-        inheritanceCore.connect(beneficiary1).claimAssets(newInheritanceId)
+        inheritanceCore.connect(beneficiary1).claimAssets(newInheritanceId),
       ).to.be.revertedWithCustomError(
         inheritanceCore,
-        "InheritanceNotTriggered"
+        "InheritanceNotTriggered",
       );
     });
 
@@ -467,12 +468,11 @@ describe("InheritanceCore", function () {
       await inheritanceCore.connect(beneficiary1).claimAssets(inheritanceId);
 
       await expect(
-        inheritanceCore.connect(beneficiary2).claimAssets(inheritanceId)
+        inheritanceCore.connect(beneficiary2).claimAssets(inheritanceId),
       ).to.emit(inheritanceCore, "InheritanceCompleted");
 
-      const inheritanceData = await inheritanceCore.getInheritanceData(
-        inheritanceId
-      );
+      const inheritanceData =
+        await inheritanceCore.getInheritanceData(inheritanceId);
       expect(inheritanceData.status).to.equal(2); // COMPLETED
     });
   });
@@ -497,14 +497,14 @@ describe("InheritanceCore", function () {
         "Vesting Test",
         executor.address,
         false,
-        timeLock
+        timeLock,
       );
       inheritanceId = 0;
 
       await inheritanceCore.addBeneficiary(
         inheritanceId,
         beneficiary1.address,
-        10000
+        10000,
       );
       await inheritanceCore.depositETH(inheritanceId, { value: depositAmount });
       await inheritanceCore.triggerInheritance(inheritanceId);
@@ -513,7 +513,7 @@ describe("InheritanceCore", function () {
     it("Should return zero claimable amount during cliff period", async function () {
       const claimable = await inheritanceCore.getClaimableETH(
         inheritanceId,
-        beneficiary1.address
+        beneficiary1.address,
       );
       expect(claimable).to.equal(0);
     });
@@ -524,7 +524,7 @@ describe("InheritanceCore", function () {
 
       const claimable = await inheritanceCore.getClaimableETH(
         inheritanceId,
-        beneficiary1.address
+        beneficiary1.address,
       );
       expect(claimable).to.be.gt(0);
       expect(claimable).to.be.lt(depositAmount);
@@ -536,7 +536,7 @@ describe("InheritanceCore", function () {
 
       const claimable = await inheritanceCore.getClaimableETH(
         inheritanceId,
-        beneficiary1.address
+        beneficiary1.address,
       );
       expect(claimable).to.equal(depositAmount);
     });
@@ -557,12 +557,12 @@ describe("InheritanceCore", function () {
         "Gas Test",
         executor.address,
         false,
-        timeLock
+        timeLock,
       );
       const receipt = await tx.wait();
 
       console.log(
-        `Inheritance creation gas used: ${receipt?.gasUsed.toString()}`
+        `Inheritance creation gas used: ${receipt?.gasUsed.toString()}`,
       );
       expect(receipt?.gasUsed).to.be.lt(500000); // Should be well under 500k gas
     });
@@ -581,13 +581,13 @@ describe("InheritanceCore", function () {
         "Gas Test",
         executor.address,
         false,
-        timeLock
+        timeLock,
       );
 
       const tx = await inheritanceCore.addBeneficiary(
         0,
         beneficiary1.address,
-        5000
+        5000,
       );
       const receipt = await tx.wait();
 

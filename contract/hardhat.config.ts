@@ -21,20 +21,22 @@ const config: HardhatUserConfig = {
     localhost: {
       url: "http://127.0.0.1:8545",
     },
-    // Updated Somnia network configurations per official docs
+    // Somnia network configurations per official docs
     "somnia-testnet": {
-      url: "https://dream-rpc.somnia.network", // Updated RPC endpoint
-      chainId: 50312, // Updated chain ID
+      url: "https://dream-rpc.somnia.network/", // Official RPC endpoint with trailing slash
+      chainId: 50312,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      gasPrice: "auto",
-      gas: "auto",
+      // Remove fixed gasPrice to use network's suggested gas price
+      gas: 8000000,
+      timeout: 60000,
     },
     "somnia-mainnet": {
-      url: "https://dream-rpc.somnia.network", // Updated RPC endpoint
-      chainId: 50312, // Updated chain ID
+      url: "https://dream-rpc.somnia.network/", // Official RPC endpoint with trailing slash
+      chainId: 50312, // Note: Mainnet may have different chain ID when launched
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      gasPrice: "auto",
-      gas: "auto",
+      gasPrice: 1000000000, // 1 gwei
+      gas: 8000000,
+      timeout: 60000,
     },
   },
   etherscan: {

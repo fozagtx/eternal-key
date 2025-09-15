@@ -1,101 +1,133 @@
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
-import { parseEther, formatEther, Address } from 'viem'
-import { CONTRACT_ADDRESSES, INHERITANCE_CORE_ABI, InheritanceData, Beneficiary, Asset, TimeLock } from '@/lib/contracts'
+import {
+  useAccount,
+  useReadContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
+import { parseEther, formatEther, Address } from "viem";
+import {
+  CONTRACT_ADDRESSES,
+  INHERITANCE_CORE_ABI,
+  InheritanceData,
+  Beneficiary,
+  Asset,
+  TimeLock,
+} from "@/lib/contracts";
 
 export function useInheritanceContract() {
-  const { address } = useAccount()
-  const { writeContract, data: hash, error: writeError, isPending: isWritePending } = useWriteContract()
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash })
+  const { address } = useAccount();
+  const {
+    writeContract,
+    data: hash,
+    error: writeError,
+    isPending: isWritePending,
+  } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({ hash });
 
   // Create a new inheritance vault
   const createInheritance = async (
     name: string,
     executor: Address,
     requiresConfirmation: boolean,
-    timeLock: TimeLock
+    timeLock: TimeLock,
   ) => {
-    if (!address) throw new Error('Wallet not connected')
+    if (!address) throw new Error("Wallet not connected");
+
+    const args = [
+      name,
+      executor,
+      requiresConfirmation,
+      {
+        distributionType: timeLock.distributionType,
+        unlockTime: timeLock.unlockTime,
+        vestingDuration: timeLock.vestingDuration,
+        cliffDuration: timeLock.cliffDuration,
+        milestoneTimestamps: timeLock.milestoneTimestamps,
+        milestonePercentages: timeLock.milestonePercentages,
+      },
+    ] as const;
 
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: 'createInheritance',
-      args: [name, executor, requiresConfirmation, timeLock]
-    })
-  }
+      functionName: "createInheritance",
+      args,
+    });
+  };
 
   // Add beneficiary to inheritance
   const addBeneficiary = async (
     inheritanceId: bigint,
     beneficiary: Address,
-    allocationBasisPoints: bigint
+    allocationBasisPoints: bigint,
   ) => {
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: 'addBeneficiary',
-      args: [inheritanceId, beneficiary, allocationBasisPoints]
-    })
-  }
+      functionName: "addBeneficiary",
+      args: [inheritanceId, beneficiary, allocationBasisPoints],
+    });
+  };
 
   // Deposit ETH to inheritance vault
   const depositETH = async (inheritanceId: bigint, amount: string) => {
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: 'depositETH',
+      functionName: "depositETH",
       args: [inheritanceId],
-      value: parseEther(amount)
-    })
-  }
+      value: parseEther(amount),
+    });
+  };
 
   // Deposit ERC20 tokens
   const depositERC20 = async (
     inheritanceId: bigint,
     tokenContract: Address,
-    amount: bigint
+    amount: bigint,
   ) => {
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: 'depositERC20',
-      args: [inheritanceId, tokenContract, amount]
-    })
-  }
+      functionName: "depositERC20",
+      args: [inheritanceId, tokenContract, amount],
+    });
+  };
 
   // Deposit ERC721 NFTs
   const depositERC721 = async (
     inheritanceId: bigint,
     nftContract: Address,
-    tokenIds: bigint[]
+    tokenIds: bigint[],
   ) => {
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: 'depositERC721',
-      args: [inheritanceId, nftContract, tokenIds]
-    })
-  }
+      functionName: "depositERC721",
+      args: [inheritanceId, nftContract, tokenIds],
+    });
+  };
 
   // Trigger inheritance distribution
   const triggerInheritance = async (inheritanceId: bigint) => {
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: 'triggerInheritance',
-      args: [inheritanceId]
-    })
-  }
+      functionName: "triggerInheritance",
+      args: [inheritanceId],
+    });
+  };
 
   // Claim assets as beneficiary
   const claimAssets = async (inheritanceId: bigint) => {
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: 'claimAssets',
-      args: [inheritanceId]
-    })
-  }
+      functionName: "claimAssets",
+      args: [inheritanceId],
+    });
+  };
 
   return {
     // Write functions
@@ -113,7 +145,7 @@ export function useInheritanceContract() {
     isWritePending,
     isConfirming,
     isConfirmed,
-  }
+  };
 }
 
 // Hook to read inheritance data
@@ -121,59 +153,62 @@ export function useInheritanceData(inheritanceId: bigint) {
   return useReadContract({
     address: CONTRACT_ADDRESSES.InheritanceCore,
     abi: INHERITANCE_CORE_ABI,
-    functionName: 'getInheritanceData',
+    functionName: "getInheritanceData",
     args: [inheritanceId],
     query: {
       enabled: !!inheritanceId,
-    }
+    },
   }) as {
-    data: InheritanceData | undefined
-    isError: boolean
-    isLoading: boolean
-    error: Error | null
-    refetch: () => void
-  }
+    data: InheritanceData | undefined;
+    isError: boolean;
+    isLoading: boolean;
+    error: Error | null;
+    refetch: () => void;
+  };
 }
 
 // Hook to get beneficiary info
-export function useBeneficiaryInfo(inheritanceId: bigint, beneficiary: Address) {
+export function useBeneficiaryInfo(
+  inheritanceId: bigint,
+  beneficiary: Address,
+) {
   return useReadContract({
     address: CONTRACT_ADDRESSES.InheritanceCore,
     abi: INHERITANCE_CORE_ABI,
-    functionName: 'getBeneficiaryInfo',
+    functionName: "getBeneficiaryInfo",
     args: [inheritanceId, beneficiary],
     query: {
       enabled: !!inheritanceId && !!beneficiary,
-    }
+    },
   }) as {
-    data: Beneficiary | undefined
-    isError: boolean
-    isLoading: boolean
-    error: Error | null
-    refetch: () => void
-  }
+    data: Beneficiary | undefined;
+    isError: boolean;
+    isLoading: boolean;
+    error: Error | null;
+    refetch: () => void;
+  };
 }
 
 // Hook to get claimable ETH amount
 export function useClaimableETH(inheritanceId: bigint, beneficiary?: Address) {
-  const { address } = useAccount()
-  const targetAddress = beneficiary || address
+  const { address } = useAccount();
+  const targetAddress = beneficiary || address;
 
   return useReadContract({
     address: CONTRACT_ADDRESSES.InheritanceCore,
     abi: INHERITANCE_CORE_ABI,
-    functionName: 'getClaimableETH',
+    functionName: "getClaimableETH",
     args: [inheritanceId, targetAddress!],
     query: {
       enabled: !!inheritanceId && !!targetAddress,
-    }
+    },
   }) as {
-    data: bigint | undefined
-    isError: boolean
-    isLoading: boolean
-    error: Error | null
-    refetch: () => void
-  }
+    data: bigint | undefined;
+    isError: boolean;
+    isLoading: boolean;
+    error: Error | null;
+    refetch: () => void;
+  };
 }
 
 // Hook to get all assets in inheritance
@@ -181,16 +216,16 @@ export function useInheritanceAssets(inheritanceId: bigint) {
   return useReadContract({
     address: CONTRACT_ADDRESSES.InheritanceCore,
     abi: INHERITANCE_CORE_ABI,
-    functionName: 'getTotalAssets',
+    functionName: "getTotalAssets",
     args: [inheritanceId],
     query: {
       enabled: !!inheritanceId,
-    }
+    },
   }) as {
-    data: Asset[] | undefined
-    isError: boolean
-    isLoading: boolean
-    error: Error | null
-    refetch: () => void
-  }
+    data: Asset[] | undefined;
+    isError: boolean;
+    isLoading: boolean;
+    error: Error | null;
+    refetch: () => void;
+  };
 }

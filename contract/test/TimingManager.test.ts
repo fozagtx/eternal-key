@@ -19,11 +19,13 @@ describe("TimingManager", function () {
   beforeEach(async function () {
     [owner, executor, beneficiary, otherAccount] = await ethers.getSigners();
 
-    const InheritanceCoreFactory = await ethers.getContractFactory("InheritanceCore");
+    const InheritanceCoreFactory =
+      await ethers.getContractFactory("InheritanceCore");
     inheritanceCore = await InheritanceCoreFactory.deploy();
     await inheritanceCore.waitForDeployment();
 
-    const TimingManagerFactory = await ethers.getContractFactory("TimingManager");
+    const TimingManagerFactory =
+      await ethers.getContractFactory("TimingManager");
     timingManager = await TimingManagerFactory.deploy();
     await timingManager.waitForDeployment();
 
@@ -43,9 +45,19 @@ describe("TimingManager", function () {
 
     it("Should allow admin to update global timing", async function () {
       await expect(
-        timingManager.updateGlobalTiming(THIRTY_SECONDS, THIRTY_SECONDS, THIRTY_SECONDS)
-      ).to.emit(timingManager, "GlobalTimingUpdated")
-        .withArgs(THIRTY_SECONDS, THIRTY_SECONDS, THIRTY_SECONDS, owner.address);
+        timingManager.updateGlobalTiming(
+          THIRTY_SECONDS,
+          THIRTY_SECONDS,
+          THIRTY_SECONDS,
+        ),
+      )
+        .to.emit(timingManager, "GlobalTimingUpdated")
+        .withArgs(
+          THIRTY_SECONDS,
+          THIRTY_SECONDS,
+          THIRTY_SECONDS,
+          owner.address,
+        );
 
       const globalConfig = await timingManager.getGlobalTiming();
       expect(globalConfig.minVestingDuration).to.equal(THIRTY_SECONDS);
@@ -55,7 +67,9 @@ describe("TimingManager", function () {
 
     it("Should reject non-admin global timing updates", async function () {
       await expect(
-        timingManager.connect(otherAccount).updateGlobalTiming(THIRTY_SECONDS, THIRTY_SECONDS, THIRTY_SECONDS)
+        timingManager
+          .connect(otherAccount)
+          .updateGlobalTiming(THIRTY_SECONDS, THIRTY_SECONDS, THIRTY_SECONDS),
       ).to.be.revertedWith("Not authorized");
     });
   });
@@ -70,26 +84,41 @@ describe("TimingManager", function () {
         vestingDuration: 0,
         cliffDuration: 0,
         milestoneTimestamps: [],
-        milestonePercentages: []
+        milestonePercentages: [],
       };
 
-      await inheritanceCore.createInheritance("Test", executor.address, false, timeLock);
+      await inheritanceCore.createInheritance(
+        "Test",
+        executor.address,
+        false,
+        timeLock,
+      );
       inheritanceId = 0;
     });
 
     it("Should use global timing by default", async function () {
-      const inheritanceConfig = await timingManager.getInheritanceTiming(inheritanceId);
+      const inheritanceConfig =
+        await timingManager.getInheritanceTiming(inheritanceId);
       const globalConfig = await timingManager.getGlobalTiming();
 
-      expect(inheritanceConfig.minVestingDuration).to.equal(globalConfig.minVestingDuration);
-      expect(inheritanceConfig.defaultExecutionDelay).to.equal(globalConfig.defaultExecutionDelay);
+      expect(inheritanceConfig.minVestingDuration).to.equal(
+        globalConfig.minVestingDuration,
+      );
+      expect(inheritanceConfig.defaultExecutionDelay).to.equal(
+        globalConfig.defaultExecutionDelay,
+      );
     });
 
     it("Should allow owner to set testing mode", async function () {
-      await expect(
-        inheritanceCore.setTestingMode(inheritanceId)
-      ).to.emit(timingManager, "TimingConfigUpdated")
-        .withArgs(inheritanceId, FIFTEEN_SECONDS, FIFTEEN_SECONDS, FIFTEEN_SECONDS, owner.address);
+      await expect(inheritanceCore.setTestingMode(inheritanceId))
+        .to.emit(timingManager, "TimingConfigUpdated")
+        .withArgs(
+          inheritanceId,
+          FIFTEEN_SECONDS,
+          FIFTEEN_SECONDS,
+          FIFTEEN_SECONDS,
+          owner.address,
+        );
 
       const config = await timingManager.getInheritanceTiming(inheritanceId);
       expect(config.minVestingDuration).to.equal(FIFTEEN_SECONDS);
@@ -98,9 +127,10 @@ describe("TimingManager", function () {
     });
 
     it("Should allow owner to set production mode", async function () {
-      await expect(
-        inheritanceCore.setProductionMode(inheritanceId)
-      ).to.emit(timingManager, "TimingConfigUpdated");
+      await expect(inheritanceCore.setProductionMode(inheritanceId)).to.emit(
+        timingManager,
+        "TimingConfigUpdated",
+      );
 
       const config = await timingManager.getInheritanceTiming(inheritanceId);
       expect(config.minVestingDuration).to.equal(24 * 60 * 60); // 1 day
@@ -114,9 +144,21 @@ describe("TimingManager", function () {
       const customCliff = 30; // 30 seconds
 
       await expect(
-        inheritanceCore.setCustomTiming(inheritanceId, customVesting, customDelay, customCliff)
-      ).to.emit(timingManager, "TimingConfigUpdated")
-        .withArgs(inheritanceId, customVesting, customDelay, customCliff, owner.address);
+        inheritanceCore.setCustomTiming(
+          inheritanceId,
+          customVesting,
+          customDelay,
+          customCliff,
+        ),
+      )
+        .to.emit(timingManager, "TimingConfigUpdated")
+        .withArgs(
+          inheritanceId,
+          customVesting,
+          customDelay,
+          customCliff,
+          owner.address,
+        );
 
       const config = await timingManager.getInheritanceTiming(inheritanceId);
       expect(config.minVestingDuration).to.equal(customVesting);
@@ -126,13 +168,13 @@ describe("TimingManager", function () {
 
     it("Should reject unauthorized timing updates", async function () {
       await expect(
-        inheritanceCore.connect(otherAccount).setTestingMode(inheritanceId)
+        inheritanceCore.connect(otherAccount).setTestingMode(inheritanceId),
       ).to.be.revertedWith("Not inheritance owner");
     });
 
     it("Should validate minimum timing values", async function () {
       await expect(
-        timingManager.updateInheritanceTiming(inheritanceId, 0, 1, 1) // 0 seconds vesting
+        timingManager.updateInheritanceTiming(inheritanceId, 0, 1, 1), // 0 seconds vesting
       ).to.be.revertedWith("Min vesting too short");
     });
   });
@@ -147,18 +189,28 @@ describe("TimingManager", function () {
         vestingDuration: 0,
         cliffDuration: 0,
         milestoneTimestamps: [],
-        milestonePercentages: []
+        milestonePercentages: [],
       };
 
       // Create multiple inheritances
       for (let i = 0; i < 3; i++) {
-        await inheritanceCore.createInheritance(`Test ${i}`, executor.address, false, timeLock);
+        await inheritanceCore.createInheritance(
+          `Test ${i}`,
+          executor.address,
+          false,
+          timeLock,
+        );
       }
       inheritanceIds = [0, 1, 2];
     });
 
     it("Should update timing for multiple inheritances", async function () {
-      await timingManager.batchUpdateTiming(inheritanceIds, THIRTY_SECONDS, ONE_MINUTE, THIRTY_SECONDS);
+      await timingManager.batchUpdateTiming(
+        inheritanceIds,
+        THIRTY_SECONDS,
+        ONE_MINUTE,
+        THIRTY_SECONDS,
+      );
 
       for (const id of inheritanceIds) {
         const config = await timingManager.getInheritanceTiming(id);
@@ -179,10 +231,15 @@ describe("TimingManager", function () {
         vestingDuration: ONE_MINUTE, // 1 minute vesting
         cliffDuration: FIFTEEN_SECONDS, // 15 second cliff
         milestoneTimestamps: [],
-        milestonePercentages: []
+        milestonePercentages: [],
       };
 
-      await inheritanceCore.createInheritance("Vesting Test", executor.address, false, timeLock);
+      await inheritanceCore.createInheritance(
+        "Vesting Test",
+        executor.address,
+        false,
+        timeLock,
+      );
       inheritanceId = 0;
     });
 
@@ -200,11 +257,16 @@ describe("TimingManager", function () {
         vestingDuration: 5, // Too short
         cliffDuration: 0,
         milestoneTimestamps: [],
-        milestonePercentages: []
+        milestonePercentages: [],
       };
 
       await expect(
-        inheritanceCore.createInheritance("Invalid", executor.address, false, invalidTimeLock)
+        inheritanceCore.createInheritance(
+          "Invalid",
+          executor.address,
+          false,
+          invalidTimeLock,
+        ),
       ).to.be.revertedWithCustomError(inheritanceCore, "InvalidTimeLock");
     });
   });
@@ -213,29 +275,46 @@ describe("TimingManager", function () {
     it("Should allow rapid testing with 15-second intervals", async function () {
       const timeLock = {
         distributionType: 1, // LINEAR_VESTING
-        unlockTime: await time.latest() + FIFTEEN_SECONDS,
+        unlockTime: (await time.latest()) + FIFTEEN_SECONDS,
         vestingDuration: THIRTY_SECONDS,
         cliffDuration: FIFTEEN_SECONDS,
         milestoneTimestamps: [],
-        milestonePercentages: []
+        milestonePercentages: [],
       };
 
-      await inheritanceCore.createInheritance("Quick Test", executor.address, false, timeLock);
+      await inheritanceCore.createInheritance(
+        "Quick Test",
+        executor.address,
+        false,
+        timeLock,
+      );
       const inheritanceId = 0;
 
-      await inheritanceCore.addBeneficiary(inheritanceId, beneficiary.address, 10000);
-      await inheritanceCore.depositETH(inheritanceId, { value: ethers.parseEther("1.0") });
+      await inheritanceCore.addBeneficiary(
+        inheritanceId,
+        beneficiary.address,
+        10000,
+      );
+      await inheritanceCore.depositETH(inheritanceId, {
+        value: ethers.parseEther("1.0"),
+      });
       await inheritanceCore.triggerInheritance(inheritanceId);
 
       // Initially no assets claimable (cliff period)
-      let claimable = await inheritanceCore.getClaimableETH(inheritanceId, beneficiary.address);
+      let claimable = await inheritanceCore.getClaimableETH(
+        inheritanceId,
+        beneficiary.address,
+      );
       expect(claimable).to.equal(0);
 
       // Move past cliff period
       await time.increase(FIFTEEN_SECONDS + 1);
 
       // Should have some claimable amount
-      claimable = await inheritanceCore.getClaimableETH(inheritanceId, beneficiary.address);
+      claimable = await inheritanceCore.getClaimableETH(
+        inheritanceId,
+        beneficiary.address,
+      );
       expect(claimable).to.be.gt(0);
       expect(claimable).to.be.lt(ethers.parseEther("1.0"));
 
@@ -243,7 +322,10 @@ describe("TimingManager", function () {
       await time.increase(THIRTY_SECONDS);
 
       // Should have full amount claimable
-      claimable = await inheritanceCore.getClaimableETH(inheritanceId, beneficiary.address);
+      claimable = await inheritanceCore.getClaimableETH(
+        inheritanceId,
+        beneficiary.address,
+      );
       expect(claimable).to.equal(ethers.parseEther("1.0"));
 
       console.log("✅ Quick testing scenario completed in under 1 minute!");
