@@ -62,29 +62,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.InheritanceCore__factory>;
     getContractFactory(
-      name: "IEmergencyManager",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IEmergencyManager__factory>;
-    getContractFactory(
       name: "IInheritanceCore",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IInheritanceCore__factory>;
     getContractFactory(
-      name: "ITimingManager",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ITimingManager__factory>;
-    getContractFactory(
       name: "InheritanceLib",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.InheritanceLib__factory>;
-    getContractFactory(
-      name: "EmergencyManager",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.EmergencyManager__factory>;
-    getContractFactory(
-      name: "TimingManager",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TimingManager__factory>;
 
     getContractAt(
       name: "AccessControl",
@@ -147,35 +131,15 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.InheritanceCore>;
     getContractAt(
-      name: "IEmergencyManager",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IEmergencyManager>;
-    getContractAt(
       name: "IInheritanceCore",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IInheritanceCore>;
     getContractAt(
-      name: "ITimingManager",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ITimingManager>;
-    getContractAt(
       name: "InheritanceLib",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.InheritanceLib>;
-    getContractAt(
-      name: "EmergencyManager",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.EmergencyManager>;
-    getContractAt(
-      name: "TimingManager",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.TimingManager>;
 
     deployContract(
       name: "AccessControl",
@@ -226,29 +190,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.InheritanceCore>;
     deployContract(
-      name: "IEmergencyManager",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IEmergencyManager>;
-    deployContract(
       name: "IInheritanceCore",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IInheritanceCore>;
     deployContract(
-      name: "ITimingManager",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ITimingManager>;
-    deployContract(
       name: "InheritanceLib",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.InheritanceLib>;
-    deployContract(
-      name: "EmergencyManager",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.EmergencyManager>;
-    deployContract(
-      name: "TimingManager",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.TimingManager>;
 
     deployContract(
       name: "AccessControl",
@@ -311,35 +259,15 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.InheritanceCore>;
     deployContract(
-      name: "IEmergencyManager",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IEmergencyManager>;
-    deployContract(
       name: "IInheritanceCore",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IInheritanceCore>;
     deployContract(
-      name: "ITimingManager",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ITimingManager>;
-    deployContract(
       name: "InheritanceLib",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.InheritanceLib>;
-    deployContract(
-      name: "EmergencyManager",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.EmergencyManager>;
-    deployContract(
-      name: "TimingManager",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.TimingManager>;
 
     // default types
     getContractFactory(

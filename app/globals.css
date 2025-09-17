@@ -119,4 +119,36 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Mobile touch targets */
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea {
+    @apply min-h-[44px] touch-manipulation;
+  }
+
+  /* Better mobile scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Mobile safe area padding */
+  .safe-area-inset {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  /* Prevent zoom on input focus */
+  @media screen and (max-width: 768px) {
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select {
+      font-size: 16px;
+    }
+  }
 }

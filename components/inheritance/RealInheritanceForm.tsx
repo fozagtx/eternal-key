@@ -136,9 +136,9 @@ export function RealInheritanceForm() {
   // Deposit step
   if (step === "deposit" && realInheritanceId) {
     return (
-      <div className="max-w-md mx-auto">
-        <div className="bg-card border border-border rounded-lg p-6">
-          <h2 className="text-2xl font-bold mb-4 text-center">
+      <div className="max-w-md mx-auto px-4">
+        <div className="bg-card border border-border rounded-lg p-4 sm:p-6">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center">
             ✅ Step 2: Deposit STT
           </h2>
           <div className="space-y-4">
@@ -187,10 +187,12 @@ export function RealInheritanceForm() {
 
   if (step === "success" && realInheritanceId) {
     return (
-      <div className="max-w-md mx-auto">
-        <div className="bg-card border border-border rounded-lg p-6 text-center">
-          <div className="text-6xl mb-4">✅</div>
-          <h2 className="text-2xl font-bold mb-4">Inheritance Created!</h2>
+      <div className="max-w-md mx-auto px-4">
+        <div className="bg-card border border-border rounded-lg p-4 sm:p-6 text-center">
+          <div className="text-5xl sm:text-6xl mb-4">✅</div>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">
+            Inheritance Created!
+          </h2>
           <div className="space-y-3 text-sm">
             <div className="bg-muted/50 rounded p-3">
               <p>
@@ -246,16 +248,16 @@ export function RealInheritanceForm() {
   }
 
   return (
-    <div className="max-w-md mx-auto">
-      <div className="bg-card border border-border rounded-lg p-6">
-        <h2 className="text-2xl font-bold mb-6 text-center">
+    <div className="max-w-md mx-auto px-4">
+      <div className="bg-card border border-border rounded-lg p-4 sm:p-6">
+        <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center">
           Create Inheritance
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-xs sm:text-sm font-medium mb-1">
               Inheritance Name
             </label>
             <input
@@ -264,7 +266,7 @@ export function RealInheritanceForm() {
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, name: e.target.value }))
               }
-              className="w-full border border-border rounded-md px-3 py-2 bg-background"
+              className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm sm:text-base"
               placeholder="My Family Vault"
             />
             {errors.name && (
@@ -274,7 +276,7 @@ export function RealInheritanceForm() {
 
           {/* Beneficiary */}
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-xs sm:text-sm font-medium mb-1">
               Beneficiary Wallet
             </label>
             <input
@@ -286,7 +288,7 @@ export function RealInheritanceForm() {
                   beneficiaryAddress: e.target.value,
                 }))
               }
-              className="w-full border border-border rounded-md px-3 py-2 bg-background text-xs"
+              className="w-full border border-border rounded-md px-3 py-2 bg-background text-xs sm:text-sm"
               placeholder="0x..."
             />
             {errors.beneficiaryAddress && (
@@ -298,7 +300,7 @@ export function RealInheritanceForm() {
 
           {/* Deposit Amount */}
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-xs sm:text-sm font-medium mb-1">
               Deposit Amount (STT)
             </label>
             <input
@@ -311,7 +313,7 @@ export function RealInheritanceForm() {
                   depositAmount: e.target.value,
                 }))
               }
-              className="w-full border border-border rounded-md px-3 py-2 bg-background"
+              className="w-full border border-border rounded-md px-3 py-2 bg-background text-sm sm:text-base"
             />
             {errors.depositAmount && (
               <p className="text-red-500 text-xs mt-1">

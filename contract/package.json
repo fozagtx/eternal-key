@@ -5,22 +5,32 @@
   "scripts": {
     "build": "hardhat compile",
     "test": "hardhat test",
+    "test:coverage": "hardhat coverage",
     "deploy:testnet": "hardhat run scripts/deploy.ts --network somnia-testnet",
     "deploy:mainnet": "hardhat run scripts/deploy.ts --network somnia-mainnet",
-    "verify": "hardhat verify",
+    "verify:testnet": "hardhat verify --network somnia-testnet",
+    "verify:mainnet": "hardhat verify --network somnia-mainnet",
+    "verify:deployment": "hardhat run scripts/verify-deployment.ts --network somnia-testnet",
+    "verify:simple": "hardhat run scripts/simple-verify.ts --network somnia-testnet",
+    "interact:testnet": "hardhat run scripts/interact.ts --network somnia-testnet",
+    "interact:mainnet": "hardhat run scripts/interact.ts --network somnia-mainnet",
     "node": "hardhat node",
-    "clean": "hardhat clean"
+    "clean": "hardhat clean",
+    "typechain": "hardhat typechain",
+    "lint": "prettier --check .",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@nomicfoundation/hardhat-verify": "^2.0.0",
     "@typechain/hardhat": "^9.0.0",
     "hardhat": "^2.22.0",
-    "typescript": "^5.4.0"
-  },
-  "dependencies": {
-    "@openzeppelin/contracts": "^5.0.2",
-    "@openzeppelin/contracts-upgradeable": "^5.0.2",
-    "dotenv": "^16.4.5"
+    "typescript": "^5.4.0",
+    "prettier": "^3.0.0",
+    "prettier-plugin-solidity": "^1.2.0"
   }
 }

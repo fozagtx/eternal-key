@@ -25,8 +25,7 @@ export interface InheritanceLibInterface extends Interface {
       | "BASIS_POINTS"
       | "DEFAULT_CLIFF_DURATION"
       | "DEFAULT_EXECUTION_DELAY"
-      | "MAX_BENEFICIARIES"
-      | "MAX_MILESTONES"
+      | "MAX_VESTING_DURATION"
       | "MIN_VESTING_DURATION"
   ): FunctionFragment;
 
@@ -43,11 +42,7 @@ export interface InheritanceLibInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "MAX_BENEFICIARIES",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "MAX_MILESTONES",
+    functionFragment: "MAX_VESTING_DURATION",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -68,11 +63,7 @@ export interface InheritanceLibInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "MAX_BENEFICIARIES",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "MAX_MILESTONES",
+    functionFragment: "MAX_VESTING_DURATION",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -130,9 +121,7 @@ export interface InheritanceLib extends BaseContract {
 
   DEFAULT_EXECUTION_DELAY: TypedContractMethod<[], [bigint], "view">;
 
-  MAX_BENEFICIARIES: TypedContractMethod<[], [bigint], "view">;
-
-  MAX_MILESTONES: TypedContractMethod<[], [bigint], "view">;
+  MAX_VESTING_DURATION: TypedContractMethod<[], [bigint], "view">;
 
   MIN_VESTING_DURATION: TypedContractMethod<[], [bigint], "view">;
 
@@ -150,10 +139,7 @@ export interface InheritanceLib extends BaseContract {
     nameOrSignature: "DEFAULT_EXECUTION_DELAY"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "MAX_BENEFICIARIES"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "MAX_MILESTONES"
+    nameOrSignature: "MAX_VESTING_DURATION"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "MIN_VESTING_DURATION"

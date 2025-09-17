@@ -1,0 +1,24 @@
+[
+  {
+    "network": "somnia-testnet",
+    "contractName": "InheritanceCore",
+    "contractAddress": "0xFaD7d4FE0599991aF00E75c08A4bC4405D28DD12",
+    "deployer": "0xc448CA6aC246Ec8D4E45947331eA3A435b40744B",
+    "deploymentTxHash": "0x38fe35dddc4e9c9de5e0df0ff0f4ed401ee0624973c54cd0ebcb95fc5f0167d8",
+    "blockNumber": 178698549,
+    "gasUsed": "49097327",
+    "timestamp": "2025-09-17T11:57:55.597Z",
+    "constructorArgs": []
+  },
+  {
+    "network": "somnia-testnet",
+    "contractName": "InheritanceCore",
+    "contractAddress": "0x27Bb37f882442638ebde4eC43c5560BFD4e71471",
+    "deployer": "0xc448CA6aC246Ec8D4E45947331eA3A435b40744B",
+    "deploymentTxHash": "0x962e49a068fe2382e5302368d435a53465394bd2e35dd0f886cb79c7938da08b",
+    "blockNumber": 178709840,
+    "gasUsed": "49222172",
+    "timestamp": "2025-09-17T12:16:55.498Z",
+    "constructorArgs": []
+  }
+]

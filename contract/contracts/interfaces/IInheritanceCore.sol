@@ -10,7 +10,7 @@ interface IInheritanceCore {
     }
 
     enum AssetType {
-        ETH,
+        STT,
         ERC20,
         ERC721
     }
@@ -27,7 +27,7 @@ interface IInheritanceCore {
         address wallet;
         uint256 allocationBasisPoints;
         bool isActive;
-        uint256 claimedETH;
+        uint256 claimedSTT;
         uint256 addedAt;
     }
 
@@ -59,8 +59,8 @@ interface IInheritanceCore {
         uint256 totalBeneficiaries;
         bool requiresConfirmation;
         address executor;
-        uint256 totalETHDeposited;
-        uint256 totalETHClaimed;
+        uint256 totalSTTDeposited;
+        uint256 totalSTTClaimed;
     }
 
     event InheritanceCreated(
@@ -120,7 +120,7 @@ interface IInheritanceCore {
         uint256 allocationBasisPoints
     ) external;
 
-    function depositETH(uint256 inheritanceId) external payable;
+    function depositSTT(uint256 inheritanceId) external payable;
 
     function depositERC20(
         uint256 inheritanceId,
@@ -147,7 +147,7 @@ interface IInheritanceCore {
         address beneficiary
     ) external view returns (Beneficiary memory);
 
-    function getClaimableETH(
+    function getClaimableSTT(
         uint256 inheritanceId,
         address beneficiary
     ) external view returns (uint256);

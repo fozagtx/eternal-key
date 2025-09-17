@@ -4,4 +4,3 @@
 export * as core from "./core";
 export * as interfaces from "./interfaces";
 export * as libraries from "./libraries";
-export * as managers from "./managers";

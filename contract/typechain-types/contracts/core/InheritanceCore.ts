@@ -53,7 +53,7 @@ export declare namespace IInheritanceCore {
     wallet: AddressLike;
     allocationBasisPoints: BigNumberish;
     isActive: boolean;
-    claimedETH: BigNumberish;
+    claimedSTT: BigNumberish;
     addedAt: BigNumberish;
   };
 
@@ -61,13 +61,13 @@ export declare namespace IInheritanceCore {
     wallet: string,
     allocationBasisPoints: bigint,
     isActive: boolean,
-    claimedETH: bigint,
+    claimedSTT: bigint,
     addedAt: bigint
   ] & {
     wallet: string;
     allocationBasisPoints: bigint;
     isActive: boolean;
-    claimedETH: bigint;
+    claimedSTT: bigint;
     addedAt: bigint;
   };
 
@@ -81,8 +81,8 @@ export declare namespace IInheritanceCore {
     totalBeneficiaries: BigNumberish;
     requiresConfirmation: boolean;
     executor: AddressLike;
-    totalETHDeposited: BigNumberish;
-    totalETHClaimed: BigNumberish;
+    totalSTTDeposited: BigNumberish;
+    totalSTTClaimed: BigNumberish;
   };
 
   export type InheritanceDataStructOutput = [
@@ -95,8 +95,8 @@ export declare namespace IInheritanceCore {
     totalBeneficiaries: bigint,
     requiresConfirmation: boolean,
     executor: string,
-    totalETHDeposited: bigint,
-    totalETHClaimed: bigint
+    totalSTTDeposited: bigint,
+    totalSTTClaimed: bigint
   ] & {
     owner: string;
     name: string;
@@ -107,8 +107,8 @@ export declare namespace IInheritanceCore {
     totalBeneficiaries: bigint;
     requiresConfirmation: boolean;
     executor: string;
-    totalETHDeposited: bigint;
-    totalETHClaimed: bigint;
+    totalSTTDeposited: bigint;
+    totalSTTClaimed: bigint;
   };
 
   export type AssetStruct = {
@@ -137,65 +137,29 @@ export declare namespace IInheritanceCore {
   };
 }
 
-export declare namespace ITimingManager {
-  export type TimingConfigStruct = {
-    minVestingDuration: BigNumberish;
-    defaultExecutionDelay: BigNumberish;
-    defaultCliffDuration: BigNumberish;
-    maxVestingDuration: BigNumberish;
-    isConfigurable: boolean;
-  };
-
-  export type TimingConfigStructOutput = [
-    minVestingDuration: bigint,
-    defaultExecutionDelay: bigint,
-    defaultCliffDuration: bigint,
-    maxVestingDuration: bigint,
-    isConfigurable: boolean
-  ] & {
-    minVestingDuration: bigint;
-    defaultExecutionDelay: bigint;
-    defaultCliffDuration: bigint;
-    maxVestingDuration: bigint;
-    isConfigurable: boolean;
-  };
-}
-
 export interface InheritanceCoreInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "DEFAULT_ADMIN_ROLE"
-      | "EMERGENCY_ROLE"
       | "EXECUTOR_ROLE"
-      | "OWNER_ROLE"
       | "addBeneficiary"
       | "claimAssets"
       | "createInheritance"
       | "depositERC20"
       | "depositERC721"
-      | "depositETH"
+      | "depositSTT"
       | "getBeneficiaryInfo"
-      | "getClaimableETH"
+      | "getClaimableSTT"
       | "getInheritanceData"
-      | "getInheritanceTiming"
       | "getRoleAdmin"
       | "getTotalAssets"
       | "grantRole"
       | "hasRole"
       | "onERC721Received"
-      | "pause"
-      | "paused"
       | "renounceRole"
       | "revokeRole"
-      | "setCustomTiming"
-      | "setProductionMode"
-      | "setTestingMode"
-      | "setTimingManager"
       | "supportsInterface"
-      | "timingManager"
       | "triggerInheritance"
-      | "unpause"
-      | "updateInheritanceTiming"
   ): FunctionFragment;
 
   getEvent(
@@ -206,11 +170,9 @@ export interface InheritanceCoreInterface extends Interface {
       | "InheritanceCompleted"
       | "InheritanceCreated"
       | "InheritanceTriggered"
-      | "Paused"
       | "RoleAdminChanged"
       | "RoleGranted"
       | "RoleRevoked"
-      | "Unpaused"
   ): EventFragment;
 
   encodeFunctionData(
@@ -218,15 +180,7 @@ export interface InheritanceCoreInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "EMERGENCY_ROLE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "EXECUTOR_ROLE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "OWNER_ROLE",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -250,7 +204,7 @@ export interface InheritanceCoreInterface extends Interface {
     values: [BigNumberish, AddressLike, BigNumberish[]]
   ): string;
   encodeFunctionData(
-    functionFragment: "depositETH",
+    functionFragment: "depositSTT",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -258,15 +212,11 @@ export interface InheritanceCoreInterface extends Interface {
     values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "getClaimableETH",
+    functionFragment: "getClaimableSTT",
     values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getInheritanceData",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getInheritanceTiming",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -289,8 +239,6 @@ export interface InheritanceCoreInterface extends Interface {
     functionFragment: "onERC721Received",
     values: [AddressLike, AddressLike, BigNumberish, BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: "pause", values?: undefined): string;
-  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, AddressLike]
@@ -300,37 +248,12 @@ export interface InheritanceCoreInterface extends Interface {
     values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "setCustomTiming",
-    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setProductionMode",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setTestingMode",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setTimingManager",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "timingManager",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "triggerInheritance",
     values: [BigNumberish]
-  ): string;
-  encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "updateInheritanceTiming",
-    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -338,14 +261,9 @@ export interface InheritanceCoreInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "EMERGENCY_ROLE",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "EXECUTOR_ROLE",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "OWNER_ROLE", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "addBeneficiary",
     data: BytesLike
@@ -366,21 +284,17 @@ export interface InheritanceCoreInterface extends Interface {
     functionFragment: "depositERC721",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "depositETH", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "depositSTT", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getBeneficiaryInfo",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getClaimableETH",
+    functionFragment: "getClaimableSTT",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "getInheritanceData",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getInheritanceTiming",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -397,44 +311,17 @@ export interface InheritanceCoreInterface extends Interface {
     functionFragment: "onERC721Received",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setCustomTiming",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setProductionMode",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setTestingMode",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setTimingManager",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "timingManager",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "triggerInheritance",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "updateInheritanceTiming",
     data: BytesLike
   ): Result;
 }
@@ -592,18 +479,6 @@ export namespace InheritanceTriggeredEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace PausedEvent {
-  export type InputTuple = [account: AddressLike];
-  export type OutputTuple = [account: string];
-  export interface OutputObject {
-    account: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
 export namespace RoleAdminChangedEvent {
   export type InputTuple = [
     role: BytesLike,
@@ -662,18 +537,6 @@ export namespace RoleRevokedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace UnpausedEvent {
-  export type InputTuple = [account: AddressLike];
-  export type OutputTuple = [account: string];
-  export interface OutputObject {
-    account: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
 export interface InheritanceCore extends BaseContract {
   connect(runner?: ContractRunner | null): InheritanceCore;
   waitForDeployment(): Promise<this>;
@@ -719,11 +582,7 @@ export interface InheritanceCore extends BaseContract {
 
   DEFAULT_ADMIN_ROLE: TypedContractMethod<[], [string], "view">;
 
-  EMERGENCY_ROLE: TypedContractMethod<[], [string], "view">;
-
   EXECUTOR_ROLE: TypedContractMethod<[], [string], "view">;
-
-  OWNER_ROLE: TypedContractMethod<[], [string], "view">;
 
   addBeneficiary: TypedContractMethod<
     [
@@ -772,7 +631,7 @@ export interface InheritanceCore extends BaseContract {
     "nonpayable"
   >;
 
-  depositETH: TypedContractMethod<
+  depositSTT: TypedContractMethod<
     [inheritanceId: BigNumberish],
     [void],
     "payable"
@@ -784,7 +643,7 @@ export interface InheritanceCore extends BaseContract {
     "view"
   >;
 
-  getClaimableETH: TypedContractMethod<
+  getClaimableSTT: TypedContractMethod<
     [inheritanceId: BigNumberish, beneficiary: AddressLike],
     [bigint],
     "view"
@@ -793,12 +652,6 @@ export interface InheritanceCore extends BaseContract {
   getInheritanceData: TypedContractMethod<
     [inheritanceId: BigNumberish],
     [IInheritanceCore.InheritanceDataStructOutput],
-    "view"
-  >;
-
-  getInheritanceTiming: TypedContractMethod<
-    [inheritanceId: BigNumberish],
-    [ITimingManager.TimingConfigStructOutput],
     "view"
   >;
 
@@ -828,10 +681,6 @@ export interface InheritanceCore extends BaseContract {
     "view"
   >;
 
-  pause: TypedContractMethod<[], [void], "nonpayable">;
-
-  paused: TypedContractMethod<[], [boolean], "view">;
-
   renounceRole: TypedContractMethod<
     [role: BytesLike, callerConfirmation: AddressLike],
     [void],
@@ -844,58 +693,14 @@ export interface InheritanceCore extends BaseContract {
     "nonpayable"
   >;
 
-  setCustomTiming: TypedContractMethod<
-    [
-      inheritanceId: BigNumberish,
-      vestingSeconds: BigNumberish,
-      delaySeconds: BigNumberish,
-      cliffSeconds: BigNumberish
-    ],
-    [void],
-    "nonpayable"
-  >;
-
-  setProductionMode: TypedContractMethod<
-    [inheritanceId: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
-  setTestingMode: TypedContractMethod<
-    [inheritanceId: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
-  setTimingManager: TypedContractMethod<
-    [_timingManager: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
   supportsInterface: TypedContractMethod<
     [interfaceId: BytesLike],
     [boolean],
     "view"
   >;
 
-  timingManager: TypedContractMethod<[], [string], "view">;
-
   triggerInheritance: TypedContractMethod<
     [inheritanceId: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
-  unpause: TypedContractMethod<[], [void], "nonpayable">;
-
-  updateInheritanceTiming: TypedContractMethod<
-    [
-      inheritanceId: BigNumberish,
-      minVestingDuration: BigNumberish,
-      executionDelay: BigNumberish,
-      cliffDuration: BigNumberish
-    ],
     [void],
     "nonpayable"
   >;
@@ -908,13 +713,7 @@ export interface InheritanceCore extends BaseContract {
     nameOrSignature: "DEFAULT_ADMIN_ROLE"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "EMERGENCY_ROLE"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "EXECUTOR_ROLE"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "OWNER_ROLE"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "addBeneficiary"
@@ -965,7 +764,7 @@ export interface InheritanceCore extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "depositETH"
+    nameOrSignature: "depositSTT"
   ): TypedContractMethod<[inheritanceId: BigNumberish], [void], "payable">;
   getFunction(
     nameOrSignature: "getBeneficiaryInfo"
@@ -975,7 +774,7 @@ export interface InheritanceCore extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "getClaimableETH"
+    nameOrSignature: "getClaimableSTT"
   ): TypedContractMethod<
     [inheritanceId: BigNumberish, beneficiary: AddressLike],
     [bigint],
@@ -986,13 +785,6 @@ export interface InheritanceCore extends BaseContract {
   ): TypedContractMethod<
     [inheritanceId: BigNumberish],
     [IInheritanceCore.InheritanceDataStructOutput],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "getInheritanceTiming"
-  ): TypedContractMethod<
-    [inheritanceId: BigNumberish],
-    [ITimingManager.TimingConfigStructOutput],
     "view"
   >;
   getFunction(
@@ -1027,12 +819,6 @@ export interface InheritanceCore extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "pause"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "paused"
-  ): TypedContractMethod<[], [boolean], "view">;
-  getFunction(
     nameOrSignature: "renounceRole"
   ): TypedContractMethod<
     [role: BytesLike, callerConfirmation: AddressLike],
@@ -1047,50 +833,11 @@ export interface InheritanceCore extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "setCustomTiming"
-  ): TypedContractMethod<
-    [
-      inheritanceId: BigNumberish,
-      vestingSeconds: BigNumberish,
-      delaySeconds: BigNumberish,
-      cliffSeconds: BigNumberish
-    ],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "setProductionMode"
-  ): TypedContractMethod<[inheritanceId: BigNumberish], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "setTestingMode"
-  ): TypedContractMethod<[inheritanceId: BigNumberish], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "setTimingManager"
-  ): TypedContractMethod<[_timingManager: AddressLike], [void], "nonpayable">;
-  getFunction(
     nameOrSignature: "supportsInterface"
   ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
   getFunction(
-    nameOrSignature: "timingManager"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "triggerInheritance"
   ): TypedContractMethod<[inheritanceId: BigNumberish], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "unpause"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "updateInheritanceTiming"
-  ): TypedContractMethod<
-    [
-      inheritanceId: BigNumberish,
-      minVestingDuration: BigNumberish,
-      executionDelay: BigNumberish,
-      cliffDuration: BigNumberish
-    ],
-    [void],
-    "nonpayable"
-  >;
 
   getEvent(
     key: "AssetClaimed"
@@ -1135,13 +882,6 @@ export interface InheritanceCore extends BaseContract {
     InheritanceTriggeredEvent.OutputObject
   >;
   getEvent(
-    key: "Paused"
-  ): TypedContractEvent<
-    PausedEvent.InputTuple,
-    PausedEvent.OutputTuple,
-    PausedEvent.OutputObject
-  >;
-  getEvent(
     key: "RoleAdminChanged"
   ): TypedContractEvent<
     RoleAdminChangedEvent.InputTuple,
@@ -1161,13 +901,6 @@ export interface InheritanceCore extends BaseContract {
     RoleRevokedEvent.InputTuple,
     RoleRevokedEvent.OutputTuple,
     RoleRevokedEvent.OutputObject
-  >;
-  getEvent(
-    key: "Unpaused"
-  ): TypedContractEvent<
-    UnpausedEvent.InputTuple,
-    UnpausedEvent.OutputTuple,
-    UnpausedEvent.OutputObject
   >;
 
   filters: {
@@ -1237,17 +970,6 @@ export interface InheritanceCore extends BaseContract {
       InheritanceTriggeredEvent.OutputObject
     >;
 
-    "Paused(address)": TypedContractEvent<
-      PausedEvent.InputTuple,
-      PausedEvent.OutputTuple,
-      PausedEvent.OutputObject
-    >;
-    Paused: TypedContractEvent<
-      PausedEvent.InputTuple,
-      PausedEvent.OutputTuple,
-      PausedEvent.OutputObject
-    >;
-
     "RoleAdminChanged(bytes32,bytes32,bytes32)": TypedContractEvent<
       RoleAdminChangedEvent.InputTuple,
       RoleAdminChangedEvent.OutputTuple,
@@ -1279,17 +1001,6 @@ export interface InheritanceCore extends BaseContract {
       RoleRevokedEvent.InputTuple,
       RoleRevokedEvent.OutputTuple,
       RoleRevokedEvent.OutputObject
-    >;
-
-    "Unpaused(address)": TypedContractEvent<
-      UnpausedEvent.InputTuple,
-      UnpausedEvent.OutputTuple,
-      UnpausedEvent.OutputObject
-    >;
-    Unpaused: TypedContractEvent<
-      UnpausedEvent.InputTuple,
-      UnpausedEvent.OutputTuple,
-      UnpausedEvent.OutputObject
     >;
   };
 }

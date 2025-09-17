@@ -19,7 +19,7 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "to",
+        name: "recipient",
         type: "address",
       },
       {
@@ -34,52 +34,8 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "beneficiary",
-        type: "address",
-      },
-    ],
-    name: "BeneficiaryAlreadyExists",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "beneficiary",
-        type: "address",
-      },
-    ],
-    name: "BeneficiaryNotFound",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256",
-        name: "inheritanceId",
-        type: "uint256",
-      },
-    ],
-    name: "InheritanceNotActive",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "inheritanceId",
-        type: "uint256",
-      },
-    ],
-    name: "InheritanceNotTriggered",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "requested",
+        name: "required",
         type: "uint256",
       },
       {
@@ -95,59 +51,54 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "provided",
+        name: "timestamp",
         type: "uint256",
       },
       {
         internalType: "uint256",
-        name: "max",
+        name: "percentage",
         type: "uint256",
       },
     ],
-    name: "InvalidBasisPoints",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "string",
-        name: "reason",
-        type: "string",
-      },
-    ],
-    name: "InvalidTimeLock",
+    name: "InvalidMilestone",
     type: "error",
   },
   {
     inputs: [
       {
         internalType: "uint256",
-        name: "current",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "max",
+        name: "percentage",
         type: "uint256",
       },
     ],
-    name: "MaxBeneficiariesExceeded",
+    name: "InvalidPercentage",
     type: "error",
   },
   {
     inputs: [
       {
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "required",
-        type: "string",
+        internalType: "uint256",
+        name: "duration",
+        type: "uint256",
       },
     ],
-    name: "UnauthorizedAccess",
+    name: "InvalidVestingDuration",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "timestampLength",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "percentageLength",
+        type: "uint256",
+      },
+    ],
+    name: "MilestoneMismatch",
     type: "error",
   },
   {
@@ -191,20 +142,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "MAX_BENEFICIARIES",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "MAX_MILESTONES",
+    name: "MAX_VESTING_DURATION",
     outputs: [
       {
         internalType: "uint256",
@@ -231,7 +169,7 @@ const _abi = [
 ] as const;
 
 const _bytecode =
-  "0x6080806040523460185760ef908161001e823930815050f35b600080fdfe60806040526004361015601157600080fd5b60003560e01c80631f1cbe8a1460a35780632348dd1814608d5780633011071e1460735780634c05abeb146077578063aaaaaea31460735763e1f1c4a714605757600080fd5b6000366003190112606e5760206040516127108152f35b600080fd5b60a3565b6000366003190112606e57602060405160148152f35b6000366003190112606e57602060405160328152f35b6000366003190112606e576020604051600f8152f3fea26469706673582212201d2222d97dc610044b40c6694a827ebee39db178a49a657ad2350a0a833e8b3864736f6c634300081c0033";
+  "0x60d5610038600b82828239805160001a607314602b57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe7300000000000000000000000000000000000000003014608060405260043610605b5760003560e01c80631f1cbe8a1460605780633011071e14607b5780637cd0814b146084578063aaaaaea314608e578063e1f1c4a7146097575b600080fd5b606962278d0081565b60405190815260200160405180910390f35b60696201518081565b60696312cc030081565b606962093a8081565b60696127108156fea26469706673582212207fa722c29d32a8d244be2bb6ae4cfb9e6990fb31eeb44442d5833021e08c85bf64736f6c634300081c0033";
 
 type InheritanceLibConstructorParams =
   | [signer?: Signer]

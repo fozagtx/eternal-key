@@ -53,7 +53,7 @@ export declare namespace IInheritanceCore {
     wallet: AddressLike;
     allocationBasisPoints: BigNumberish;
     isActive: boolean;
-    claimedETH: BigNumberish;
+    claimedSTT: BigNumberish;
     addedAt: BigNumberish;
   };
 
@@ -61,13 +61,13 @@ export declare namespace IInheritanceCore {
     wallet: string,
     allocationBasisPoints: bigint,
     isActive: boolean,
-    claimedETH: bigint,
+    claimedSTT: bigint,
     addedAt: bigint
   ] & {
     wallet: string;
     allocationBasisPoints: bigint;
     isActive: boolean;
-    claimedETH: bigint;
+    claimedSTT: bigint;
     addedAt: bigint;
   };
 
@@ -81,8 +81,8 @@ export declare namespace IInheritanceCore {
     totalBeneficiaries: BigNumberish;
     requiresConfirmation: boolean;
     executor: AddressLike;
-    totalETHDeposited: BigNumberish;
-    totalETHClaimed: BigNumberish;
+    totalSTTDeposited: BigNumberish;
+    totalSTTClaimed: BigNumberish;
   };
 
   export type InheritanceDataStructOutput = [
@@ -95,8 +95,8 @@ export declare namespace IInheritanceCore {
     totalBeneficiaries: bigint,
     requiresConfirmation: boolean,
     executor: string,
-    totalETHDeposited: bigint,
-    totalETHClaimed: bigint
+    totalSTTDeposited: bigint,
+    totalSTTClaimed: bigint
   ] & {
     owner: string;
     name: string;
@@ -107,8 +107,8 @@ export declare namespace IInheritanceCore {
     totalBeneficiaries: bigint;
     requiresConfirmation: boolean;
     executor: string;
-    totalETHDeposited: bigint;
-    totalETHClaimed: bigint;
+    totalSTTDeposited: bigint;
+    totalSTTClaimed: bigint;
   };
 
   export type AssetStruct = {
@@ -145,9 +145,9 @@ export interface IInheritanceCoreInterface extends Interface {
       | "createInheritance"
       | "depositERC20"
       | "depositERC721"
-      | "depositETH"
+      | "depositSTT"
       | "getBeneficiaryInfo"
-      | "getClaimableETH"
+      | "getClaimableSTT"
       | "getInheritanceData"
       | "getTotalAssets"
       | "triggerInheritance"
@@ -184,7 +184,7 @@ export interface IInheritanceCoreInterface extends Interface {
     values: [BigNumberish, AddressLike, BigNumberish[]]
   ): string;
   encodeFunctionData(
-    functionFragment: "depositETH",
+    functionFragment: "depositSTT",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -192,7 +192,7 @@ export interface IInheritanceCoreInterface extends Interface {
     values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "getClaimableETH",
+    functionFragment: "getClaimableSTT",
     values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
@@ -228,13 +228,13 @@ export interface IInheritanceCoreInterface extends Interface {
     functionFragment: "depositERC721",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "depositETH", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "depositSTT", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getBeneficiaryInfo",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getClaimableETH",
+    functionFragment: "getClaimableSTT",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -494,7 +494,7 @@ export interface IInheritanceCore extends BaseContract {
     "nonpayable"
   >;
 
-  depositETH: TypedContractMethod<
+  depositSTT: TypedContractMethod<
     [inheritanceId: BigNumberish],
     [void],
     "payable"
@@ -506,7 +506,7 @@ export interface IInheritanceCore extends BaseContract {
     "view"
   >;
 
-  getClaimableETH: TypedContractMethod<
+  getClaimableSTT: TypedContractMethod<
     [inheritanceId: BigNumberish, beneficiary: AddressLike],
     [bigint],
     "view"
@@ -583,7 +583,7 @@ export interface IInheritanceCore extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "depositETH"
+    nameOrSignature: "depositSTT"
   ): TypedContractMethod<[inheritanceId: BigNumberish], [void], "payable">;
   getFunction(
     nameOrSignature: "getBeneficiaryInfo"
@@ -593,7 +593,7 @@ export interface IInheritanceCore extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "getClaimableETH"
+    nameOrSignature: "getClaimableSTT"
   ): TypedContractMethod<
     [inheritanceId: BigNumberish, beneficiary: AddressLike],
     [bigint],

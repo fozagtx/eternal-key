@@ -1,91 +1,60 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-
 import "../interfaces/IInheritanceCore.sol";
-import "../interfaces/ITimingManager.sol";
 import "../libraries/InheritanceLib.sol";
 
-contract InheritanceCore is
-    IInheritanceCore,
-    AccessControl,
-    ReentrancyGuard,
-    Pausable,
-    IERC721Receiver
-{
+contract InheritanceCore is IInheritanceCore, AccessControl, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
     bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
-    bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
-
-    ITimingManager public timingManager;
 
     uint256 private _inheritanceCounter;
-
     mapping(uint256 => InheritanceData) private _inheritances;
     mapping(uint256 => mapping(address => Beneficiary)) private _beneficiaries;
     mapping(uint256 => address[]) private _beneficiaryList;
     mapping(uint256 => Asset[]) private _assets;
-    mapping(uint256 => mapping(address => mapping(address => uint256)))
-        private _tokenBalances;
-    mapping(uint256 => mapping(address => uint256)) private _claimedTokens;
-    mapping(uint256 => bool) private _assetsFreezed;
 
     modifier inheritanceExists(uint256 inheritanceId) {
-        if (inheritanceId >= _inheritanceCounter) {
-            revert InheritanceLib.InheritanceNotActive(inheritanceId);
-        }
+        require(
+            inheritanceId < _inheritanceCounter,
+            "Inheritance does not exist"
+        );
         _;
     }
 
     modifier onlyInheritanceOwner(uint256 inheritanceId) {
-        if (_inheritances[inheritanceId].owner != msg.sender) {
-            revert InheritanceLib.UnauthorizedAccess(
-                msg.sender,
-                "inheritance owner"
-            );
-        }
-        _;
-    }
-
-    modifier notFreezed(uint256 inheritanceId) {
-        require(!_assetsFreezed[inheritanceId], "Assets are frozen");
+        require(
+            msg.sender == _inheritances[inheritanceId].owner,
+            "Only inheritance owner allowed"
+        );
         _;
     }
 
     modifier onlyWhenActive(uint256 inheritanceId) {
-        if (_inheritances[inheritanceId].status != InheritanceStatus.ACTIVE) {
-            revert InheritanceLib.InheritanceNotActive(inheritanceId);
-        }
+        require(
+            _inheritances[inheritanceId].status == InheritanceStatus.ACTIVE,
+            "Inheritance not active"
+        );
         _;
     }
 
     modifier onlyWhenTriggered(uint256 inheritanceId) {
-        if (
-            _inheritances[inheritanceId].status != InheritanceStatus.TRIGGERED
-        ) {
-            revert InheritanceLib.InheritanceNotTriggered(inheritanceId);
-        }
+        require(
+            _inheritances[inheritanceId].status == InheritanceStatus.TRIGGERED,
+            "Inheritance not triggered"
+        );
         _;
     }
 
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
-
-    function setTimingManager(
-        address _timingManager
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_timingManager != address(0), "Invalid timing manager address");
-        timingManager = ITimingManager(_timingManager);
+        _grantRole(EXECUTOR_ROLE, msg.sender);
     }
 
     function createInheritance(
@@ -96,21 +65,22 @@ contract InheritanceCore is
     ) external override returns (uint256 inheritanceId) {
         require(bytes(name).length > 0, "Name cannot be empty");
         require(executor != address(0), "Invalid executor address");
-        _validateTimeLock(timeLock);
 
         inheritanceId = _inheritanceCounter++;
 
-        InheritanceData storage inheritance = _inheritances[inheritanceId];
-        inheritance.owner = msg.sender;
-        inheritance.name = name;
-        inheritance.status = InheritanceStatus.ACTIVE;
-        inheritance.createdAt = block.timestamp;
-        inheritance.timeLock = timeLock;
-        inheritance.requiresConfirmation = requiresConfirmation;
-        inheritance.executor = executor;
-
-        _grantRole(OWNER_ROLE, msg.sender);
-        _grantRole(EXECUTOR_ROLE, executor);
+        _inheritances[inheritanceId] = InheritanceData({
+            owner: msg.sender,
+            name: name,
+            status: InheritanceStatus.ACTIVE,
+            createdAt: block.timestamp,
+            triggeredAt: 0,
+            timeLock: timeLock,
+            totalBeneficiaries: 0,
+            requiresConfirmation: requiresConfirmation,
+            executor: executor,
+            totalSTTDeposited: 0,
+            totalSTTClaimed: 0
+        });
 
         emit InheritanceCreated(
             inheritanceId,
@@ -132,35 +102,27 @@ contract InheritanceCore is
         onlyWhenActive(inheritanceId)
     {
         require(beneficiary != address(0), "Invalid beneficiary address");
-        require(beneficiary != msg.sender, "Owner cannot be beneficiary");
-
-        if (
-            _beneficiaryList[inheritanceId].length >=
-            InheritanceLib.MAX_BENEFICIARIES
-        ) {
-            revert InheritanceLib.MaxBeneficiariesExceeded(
-                _beneficiaryList[inheritanceId].length,
-                InheritanceLib.MAX_BENEFICIARIES
-            );
-        }
-
-        if (_beneficiaries[inheritanceId][beneficiary].isActive) {
-            revert InheritanceLib.BeneficiaryAlreadyExists(beneficiary);
-        }
-
-        InheritanceLib.validateAllocation(allocationBasisPoints);
+        require(beneficiary != msg.sender, "Cannot add self as beneficiary");
+        require(
+            allocationBasisPoints > 0 && allocationBasisPoints <= 10000,
+            "Invalid allocation"
+        );
+        require(
+            !_beneficiaries[inheritanceId][beneficiary].isActive,
+            "Beneficiary already exists"
+        );
 
         uint256 totalAllocation = _calculateTotalAllocation(inheritanceId) +
             allocationBasisPoints;
-        InheritanceLib.validateTotalAllocation(totalAllocation);
+        require(totalAllocation <= 10000, "Total allocation exceeds 100%");
 
-        Beneficiary storage newBeneficiary = _beneficiaries[inheritanceId][
-            beneficiary
-        ];
-        newBeneficiary.wallet = beneficiary;
-        newBeneficiary.allocationBasisPoints = allocationBasisPoints;
-        newBeneficiary.isActive = true;
-        newBeneficiary.addedAt = block.timestamp;
+        _beneficiaries[inheritanceId][beneficiary] = Beneficiary({
+            wallet: beneficiary,
+            allocationBasisPoints: allocationBasisPoints,
+            isActive: true,
+            claimedSTT: 0,
+            addedAt: block.timestamp
+        });
 
         _beneficiaryList[inheritanceId].push(beneficiary);
         _inheritances[inheritanceId].totalBeneficiaries++;
@@ -173,7 +135,7 @@ contract InheritanceCore is
         );
     }
 
-    function depositETH(
+    function depositSTT(
         uint256 inheritanceId
     )
         external
@@ -182,15 +144,14 @@ contract InheritanceCore is
         inheritanceExists(inheritanceId)
         onlyInheritanceOwner(inheritanceId)
         onlyWhenActive(inheritanceId)
-        notFreezed(inheritanceId)
         nonReentrant
     {
-        require(msg.value > 0, "Must deposit positive amount");
+        require(msg.value > 0, "Deposit amount must be positive");
 
-        _inheritances[inheritanceId].totalETHDeposited += msg.value;
+        _inheritances[inheritanceId].totalSTTDeposited += msg.value;
 
         Asset memory newAsset = Asset({
-            assetType: AssetType.ETH,
+            assetType: AssetType.STT,
             contractAddress: address(0),
             amount: msg.value,
             tokenIds: new uint256[](0),
@@ -203,7 +164,7 @@ contract InheritanceCore is
         uint256[] memory emptyArray = new uint256[](0);
         emit AssetDeposited(
             inheritanceId,
-            AssetType.ETH,
+            AssetType.STT,
             address(0),
             msg.value,
             emptyArray,
@@ -221,18 +182,16 @@ contract InheritanceCore is
         inheritanceExists(inheritanceId)
         onlyInheritanceOwner(inheritanceId)
         onlyWhenActive(inheritanceId)
-        notFreezed(inheritanceId)
         nonReentrant
     {
         require(tokenContract != address(0), "Invalid token contract");
-        require(amount > 0, "Must deposit positive amount");
+        require(amount > 0, "Amount must be positive");
 
         IERC20(tokenContract).safeTransferFrom(
             msg.sender,
             address(this),
             amount
         );
-        _tokenBalances[inheritanceId][tokenContract][address(0)] += amount;
 
         Asset memory newAsset = Asset({
             assetType: AssetType.ERC20,
@@ -266,11 +225,10 @@ contract InheritanceCore is
         inheritanceExists(inheritanceId)
         onlyInheritanceOwner(inheritanceId)
         onlyWhenActive(inheritanceId)
-        notFreezed(inheritanceId)
         nonReentrant
     {
         require(nftContract != address(0), "Invalid NFT contract");
-        require(tokenIds.length > 0, "Must deposit at least one NFT");
+        require(tokenIds.length > 0, "No token IDs provided");
 
         for (uint256 i = 0; i < tokenIds.length; i++) {
             IERC721(nftContract).safeTransferFrom(
@@ -310,10 +268,11 @@ contract InheritanceCore is
         onlyWhenActive(inheritanceId)
     {
         InheritanceData storage inheritance = _inheritances[inheritanceId];
+
         require(
             msg.sender == inheritance.owner ||
-                hasRole(EXECUTOR_ROLE, msg.sender) ||
-                hasRole(EMERGENCY_ROLE, msg.sender),
+                msg.sender == inheritance.executor ||
+                hasRole(EXECUTOR_ROLE, msg.sender),
             "Unauthorized to trigger inheritance"
         );
 
@@ -335,40 +294,44 @@ contract InheritanceCore is
         override
         inheritanceExists(inheritanceId)
         onlyWhenTriggered(inheritanceId)
-        notFreezed(inheritanceId)
         nonReentrant
     {
-        if (!_beneficiaries[inheritanceId][msg.sender].isActive) {
-            revert InheritanceLib.BeneficiaryNotFound(msg.sender);
-        }
+        require(
+            _beneficiaries[inheritanceId][msg.sender].isActive,
+            "Not a valid beneficiary"
+        );
 
-        uint256 claimableETH = getClaimableETH(inheritanceId, msg.sender);
+        uint256 claimableSTT = getClaimableSTT(inheritanceId, msg.sender);
 
-        if (claimableETH > 0) {
+        if (claimableSTT > 0) {
             _beneficiaries[inheritanceId][msg.sender]
-                .claimedETH += claimableETH;
-            _inheritances[inheritanceId].totalETHClaimed += claimableETH;
+                .claimedSTT += claimableSTT;
+            _inheritances[inheritanceId].totalSTTClaimed += claimableSTT;
 
-            InheritanceLib.safeTransferETH(msg.sender, claimableETH);
+            (bool success, ) = payable(msg.sender).call{value: claimableSTT}(
+                ""
+            );
+            require(success, "STT transfer failed");
 
             uint256[] memory emptyArray = new uint256[](0);
             emit AssetClaimed(
                 inheritanceId,
                 msg.sender,
-                AssetType.ETH,
+                AssetType.STT,
                 address(0),
-                claimableETH,
+                claimableSTT,
                 emptyArray,
                 block.timestamp
             );
-        }
 
-        _claimERC20Tokens(inheritanceId, msg.sender);
-        _claimERC721Tokens(inheritanceId, msg.sender);
+            _claimERC20Tokens(inheritanceId, msg.sender);
+            _claimERC721Tokens(inheritanceId, msg.sender);
 
-        if (_isInheritanceCompleted(inheritanceId)) {
-            _inheritances[inheritanceId].status = InheritanceStatus.COMPLETED;
-            emit InheritanceCompleted(inheritanceId, block.timestamp);
+            if (_isInheritanceCompleted(inheritanceId)) {
+                _inheritances[inheritanceId].status = InheritanceStatus
+                    .COMPLETED;
+                emit InheritanceCompleted(inheritanceId, block.timestamp);
+            }
         }
     }
 
@@ -387,14 +350,20 @@ contract InheritanceCore is
     function getBeneficiaryInfo(
         uint256 inheritanceId,
         address beneficiary
-    ) external view override returns (Beneficiary memory) {
+    )
+        external
+        view
+        override
+        inheritanceExists(inheritanceId)
+        returns (Beneficiary memory)
+    {
         return _beneficiaries[inheritanceId][beneficiary];
     }
 
-    function getClaimableETH(
+    function getClaimableSTT(
         uint256 inheritanceId,
         address beneficiary
-    ) public view override returns (uint256) {
+    ) public view override inheritanceExists(inheritanceId) returns (uint256) {
         if (
             !_beneficiaries[inheritanceId][beneficiary].isActive ||
             _inheritances[inheritanceId].status != InheritanceStatus.TRIGGERED
@@ -403,9 +372,9 @@ contract InheritanceCore is
         }
 
         Beneficiary memory ben = _beneficiaries[inheritanceId][beneficiary];
-        uint256 totalETH = _inheritances[inheritanceId].totalETHDeposited;
+        uint256 totalSTT = _inheritances[inheritanceId].totalSTTDeposited;
         uint256 beneficiaryShare = InheritanceLib.calculatePercentage(
-            totalETH,
+            totalSTT,
             ben.allocationBasisPoints
         );
         uint256 vestedAmount = _calculateVestedAmount(
@@ -414,7 +383,7 @@ contract InheritanceCore is
         );
 
         return
-            vestedAmount > ben.claimedETH ? vestedAmount - ben.claimedETH : 0;
+            vestedAmount > ben.claimedSTT ? vestedAmount - ben.claimedSTT : 0;
     }
 
     function getTotalAssets(
@@ -429,49 +398,21 @@ contract InheritanceCore is
         return _assets[inheritanceId];
     }
 
-    function _validateTimeLock(TimeLock memory timeLock) internal view {
-        if (timeLock.distributionType == DistributionType.IMMEDIATE) {
-            return;
-        }
-
-        if (timeLock.unlockTime <= block.timestamp) {
-            revert InheritanceLib.InvalidTimeLock(
-                "Unlock time must be in the future"
-            );
-        }
-
-        if (timeLock.distributionType == DistributionType.LINEAR_VESTING) {
-            if (
-                timeLock.vestingDuration < InheritanceLib.MIN_VESTING_DURATION
-            ) {
-                revert InheritanceLib.InvalidTimeLock(
-                    "Vesting duration too short"
-                );
-            }
-        }
-
-        if (timeLock.distributionType == DistributionType.MILESTONE_BASED) {
-            InheritanceLib.validateMilestones(
-                timeLock.milestoneTimestamps,
-                timeLock.milestonePercentages
-            );
-        }
-    }
-
     function _calculateTotalAllocation(
         uint256 inheritanceId
     ) internal view returns (uint256) {
-        uint256 total = 0;
+        uint256 totalAllocation = 0;
         address[] memory beneficiaries = _beneficiaryList[inheritanceId];
 
         for (uint256 i = 0; i < beneficiaries.length; i++) {
             if (_beneficiaries[inheritanceId][beneficiaries[i]].isActive) {
-                total += _beneficiaries[inheritanceId][beneficiaries[i]]
-                    .allocationBasisPoints;
+                totalAllocation += _beneficiaries[inheritanceId][
+                    beneficiaries[i]
+                ].allocationBasisPoints;
             }
         }
 
-        return total;
+        return totalAllocation;
     }
 
     function _calculateVestedAmount(
@@ -523,32 +464,22 @@ contract InheritanceCore is
         uint256 inheritanceId,
         address beneficiary
     ) internal {
-        Asset[] memory assets = _assets[inheritanceId];
-        uint256 allocation = _beneficiaries[inheritanceId][beneficiary]
-            .allocationBasisPoints;
+        Asset[] storage assets = _assets[inheritanceId];
+        uint256 allocationBasisPoints = _beneficiaries[inheritanceId][
+            beneficiary
+        ].allocationBasisPoints;
 
         for (uint256 i = 0; i < assets.length; i++) {
             if (assets[i].assetType == AssetType.ERC20 && assets[i].isActive) {
-                address tokenAddr = assets[i].contractAddress;
-                uint256 totalTokens = IERC20(tokenAddr).balanceOf(
-                    address(this)
-                );
                 uint256 beneficiaryShare = InheritanceLib.calculatePercentage(
-                    totalTokens,
-                    allocation
+                    assets[i].amount,
+                    allocationBasisPoints
                 );
-                uint256 vestedAmount = _calculateVestedAmount(
-                    inheritanceId,
-                    beneficiaryShare
-                );
-                uint256 claimableAmount = vestedAmount -
-                    _claimedTokens[inheritanceId][tokenAddr];
 
-                if (claimableAmount > 0) {
-                    _claimedTokens[inheritanceId][tokenAddr] += claimableAmount;
-                    IERC20(tokenAddr).safeTransfer(
+                if (beneficiaryShare > 0) {
+                    IERC20(assets[i].contractAddress).safeTransfer(
                         beneficiary,
-                        claimableAmount
+                        beneficiaryShare
                     );
 
                     uint256[] memory emptyArray = new uint256[](0);
@@ -556,8 +487,8 @@ contract InheritanceCore is
                         inheritanceId,
                         beneficiary,
                         AssetType.ERC20,
-                        tokenAddr,
-                        claimableAmount,
+                        assets[i].contractAddress,
+                        beneficiaryShare,
                         emptyArray,
                         block.timestamp
                     );
@@ -570,46 +501,40 @@ contract InheritanceCore is
         uint256 inheritanceId,
         address beneficiary
     ) internal {
-        Asset[] memory assets = _assets[inheritanceId];
-        uint256 allocation = _beneficiaries[inheritanceId][beneficiary]
-            .allocationBasisPoints;
+        Asset[] storage assets = _assets[inheritanceId];
+        uint256 allocationBasisPoints = _beneficiaries[inheritanceId][
+            beneficiary
+        ].allocationBasisPoints;
 
         for (uint256 i = 0; i < assets.length; i++) {
             if (assets[i].assetType == AssetType.ERC721 && assets[i].isActive) {
-                uint256 nftShare = InheritanceLib.calculatePercentage(
+                uint256 tokensToTransfer = InheritanceLib.calculatePercentage(
                     assets[i].tokenIds.length,
-                    allocation
+                    allocationBasisPoints
                 );
 
-                for (uint256 j = 0; j < nftShare; j++) {
-                    if (j < assets[i].tokenIds.length) {
-                        try
-                            IERC721(assets[i].contractAddress).ownerOf(
-                                assets[i].tokenIds[j]
-                            )
-                        returns (address currentOwner) {
-                            if (currentOwner == address(this)) {
-                                IERC721(assets[i].contractAddress)
-                                    .safeTransferFrom(
-                                        address(this),
-                                        beneficiary,
-                                        assets[i].tokenIds[j]
-                                    );
+                for (
+                    uint256 j = 0;
+                    j < tokensToTransfer && j < assets[i].tokenIds.length;
+                    j++
+                ) {
+                    IERC721(assets[i].contractAddress).safeTransferFrom(
+                        address(this),
+                        beneficiary,
+                        assets[i].tokenIds[j]
+                    );
+                }
 
-                                uint256[] memory tokenIds = new uint256[](1);
-                                tokenIds[0] = assets[i].tokenIds[j];
-                                emit AssetClaimed(
-                                    inheritanceId,
-                                    beneficiary,
-                                    AssetType.ERC721,
-                                    assets[i].contractAddress,
-                                    1,
-                                    tokenIds,
-                                    block.timestamp
-                                );
-                            }
-                        } catch {}
-                    }
+                if (tokensToTransfer > 0) {
+                    emit AssetClaimed(
+                        inheritanceId,
+                        beneficiary,
+                        AssetType.ERC721,
+                        assets[i].contractAddress,
+                        tokensToTransfer,
+                        assets[i].tokenIds,
+                        block.timestamp
+                    );
                 }
             }
         }
@@ -618,10 +543,10 @@ contract InheritanceCore is
     function _isInheritanceCompleted(
         uint256 inheritanceId
     ) internal view returns (bool) {
-        uint256 totalETH = _inheritances[inheritanceId].totalETHDeposited;
-        uint256 claimedETH = _inheritances[inheritanceId].totalETHClaimed;
+        uint256 totalSTT = _inheritances[inheritanceId].totalSTTDeposited;
+        uint256 claimedSTT = _inheritances[inheritanceId].totalSTTClaimed;
 
-        return claimedETH >= totalETH;
+        return claimedSTT >= totalSTT;
     }
 
     function onERC721Received(
@@ -629,103 +554,11 @@ contract InheritanceCore is
         address,
         uint256,
         bytes calldata
-    ) external pure override returns (bytes4) {
-        return IERC721Receiver.onERC721Received.selector;
-    }
-
-    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _pause();
-    }
-
-    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _unpause();
-    }
-
-    // Timing management functions
-    function updateInheritanceTiming(
-        uint256 inheritanceId,
-        uint256 minVestingDuration,
-        uint256 executionDelay,
-        uint256 cliffDuration
-    )
-        external
-        inheritanceExists(inheritanceId)
-        onlyInheritanceOwner(inheritanceId)
-    {
-        require(address(timingManager) != address(0), "Timing manager not set");
-        timingManager.updateInheritanceTiming(
-            inheritanceId,
-            minVestingDuration,
-            executionDelay,
-            cliffDuration
-        );
-    }
-
-    function setTestingMode(
-        uint256 inheritanceId
-    )
-        external
-        inheritanceExists(inheritanceId)
-        onlyInheritanceOwner(inheritanceId)
-    {
-        require(address(timingManager) != address(0), "Timing manager not set");
-        timingManager.setTestingMode(inheritanceId);
-    }
-
-    function setProductionMode(
-        uint256 inheritanceId
-    )
-        external
-        inheritanceExists(inheritanceId)
-        onlyInheritanceOwner(inheritanceId)
-    {
-        require(address(timingManager) != address(0), "Timing manager not set");
-        timingManager.setProductionMode(inheritanceId);
-    }
-
-    function setCustomTiming(
-        uint256 inheritanceId,
-        uint256 vestingSeconds,
-        uint256 delaySeconds,
-        uint256 cliffSeconds
-    )
-        external
-        inheritanceExists(inheritanceId)
-        onlyInheritanceOwner(inheritanceId)
-    {
-        require(address(timingManager) != address(0), "Timing manager not set");
-        timingManager.setCustomTiming(
-            inheritanceId,
-            vestingSeconds,
-            delaySeconds,
-            cliffSeconds
-        );
-    }
-
-    function getInheritanceTiming(
-        uint256 inheritanceId
-    )
-        external
-        view
-        inheritanceExists(inheritanceId)
-        returns (ITimingManager.TimingConfig memory)
-    {
-        if (address(timingManager) != address(0)) {
-            return timingManager.getInheritanceTiming(inheritanceId);
-        }
-
-        // Return default values if timing manager not set
-        return
-            ITimingManager.TimingConfig({
-                minVestingDuration: InheritanceLib.MIN_VESTING_DURATION,
-                defaultExecutionDelay: InheritanceLib.DEFAULT_EXECUTION_DELAY,
-                defaultCliffDuration: InheritanceLib.DEFAULT_CLIFF_DURATION,
-                maxVestingDuration: 365 days,
-                isConfigurable: true
-            });
+    ) external pure returns (bytes4) {
+        return this.onERC721Received.selector;
     }
 
     receive() external payable {
-        revert("Use depositETH function");
+        revert("Direct STT payments not accepted - use depositSTT function");
     }
 }

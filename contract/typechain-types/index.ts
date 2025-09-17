@@ -30,15 +30,7 @@ export type { ReentrancyGuard } from "./@openzeppelin/contracts/utils/Reentrancy
 export { ReentrancyGuard__factory } from "./factories/@openzeppelin/contracts/utils/ReentrancyGuard__factory";
 export type { InheritanceCore } from "./contracts/core/InheritanceCore";
 export { InheritanceCore__factory } from "./factories/contracts/core/InheritanceCore__factory";
-export type { IEmergencyManager } from "./contracts/interfaces/IEmergencyManager";
-export { IEmergencyManager__factory } from "./factories/contracts/interfaces/IEmergencyManager__factory";
 export type { IInheritanceCore } from "./contracts/interfaces/IInheritanceCore";
 export { IInheritanceCore__factory } from "./factories/contracts/interfaces/IInheritanceCore__factory";
-export type { ITimingManager } from "./contracts/interfaces/ITimingManager";
-export { ITimingManager__factory } from "./factories/contracts/interfaces/ITimingManager__factory";
 export type { InheritanceLib } from "./contracts/libraries/InheritanceLib";
 export { InheritanceLib__factory } from "./factories/contracts/libraries/InheritanceLib__factory";
-export type { EmergencyManager } from "./contracts/managers/EmergencyManager";
-export { EmergencyManager__factory } from "./factories/contracts/managers/EmergencyManager__factory";
-export type { TimingManager } from "./contracts/managers/TimingManager";
-export { TimingManager__factory } from "./factories/contracts/managers/TimingManager__factory";

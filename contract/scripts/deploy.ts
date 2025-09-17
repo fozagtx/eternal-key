@@ -1,165 +1,162 @@
 import { ethers } from "hardhat";
-import {
-  InheritanceCore,
-  EmergencyManager,
-  TimingManager,
-} from "../typechain-types";
+import { writeFileSync } from "fs";
+import { join } from "path";
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  const network = await ethers.provider.getNetwork();
 
-  console.log("Deploying contracts to network:", network.name);
-  console.log("Chain ID:", network.chainId);
-  console.log("Deploying contracts with account:", deployer.address);
-  console.log(
-    "Account balance:",
-    ethers.formatEther(await ethers.provider.getBalance(deployer.address)),
-  );
+  console.log("=== INHERITANCE CONTRACT DEPLOYMENT ===");
+  console.log(`Network: ${process.env.HARDHAT_NETWORK || "hardhat"}`);
+  console.log(`Deployer: ${deployer.address}`);
 
-  // Deploy InheritanceCore
-  console.log("\n🚀 Deploying InheritanceCore...");
-  const InheritanceCoreFactory =
-    await ethers.getContractFactory("InheritanceCore");
-  const inheritanceCore: InheritanceCore =
-    await InheritanceCoreFactory.deploy();
-  await inheritanceCore.waitForDeployment();
+  const balance = await ethers.provider.getBalance(deployer.address);
+  console.log(`Balance: ${ethers.formatEther(balance)} STT`);
 
-  const inheritanceCoreAddress = await inheritanceCore.getAddress();
-  console.log("✅ InheritanceCore deployed to:", inheritanceCoreAddress);
-
-  // Deploy EmergencyManager
-  console.log("\n🚀 Deploying EmergencyManager...");
-  const EmergencyManagerFactory =
-    await ethers.getContractFactory("EmergencyManager");
-  const emergencyManager: EmergencyManager =
-    await EmergencyManagerFactory.deploy();
-  await emergencyManager.waitForDeployment();
-
-  const emergencyManagerAddress = await emergencyManager.getAddress();
-  console.log("✅ EmergencyManager deployed to:", emergencyManagerAddress);
-
-  // Deploy TimingManager
-  console.log("\n🚀 Deploying TimingManager...");
-  const TimingManagerFactory = await ethers.getContractFactory("TimingManager");
-  const timingManager: TimingManager = await TimingManagerFactory.deploy();
-  await timingManager.waitForDeployment();
-
-  const timingManagerAddress = await timingManager.getAddress();
-  console.log("✅ TimingManager deployed to:", timingManagerAddress);
-
-  // Setup initial configuration
-  console.log("\n⚙️ Setting up initial configuration...");
-
-  // Grant emergency role to emergency manager
-  const EMERGENCY_ROLE = await inheritanceCore.EMERGENCY_ROLE();
-  await inheritanceCore.grantRole(EMERGENCY_ROLE, emergencyManagerAddress);
-  console.log("✅ Emergency role granted to EmergencyManager");
-
-  // Set timing manager in inheritance core
-  await inheritanceCore.setTimingManager(timingManagerAddress);
-  console.log("✅ TimingManager linked to InheritanceCore");
-
-  // Deployment summary
-  console.log("\n📋 DEPLOYMENT SUMMARY");
-  console.log("======================================");
-  console.log("Network:", network.name);
-  console.log("Chain ID:", network.chainId.toString());
-  console.log("Deployer:", deployer.address);
-  console.log("InheritanceCore:", inheritanceCoreAddress);
-  console.log("EmergencyManager:", emergencyManagerAddress);
-  console.log("TimingManager:", timingManagerAddress);
-  console.log("======================================");
-
-  // Save deployment info
-  const deploymentInfo = {
-    network: network.name,
-    chainId: network.chainId.toString(),
-    deployer: deployer.address,
-    timestamp: new Date().toISOString(),
-    contracts: {
-      InheritanceCore: inheritanceCoreAddress,
-      EmergencyManager: emergencyManagerAddress,
-      TimingManager: timingManagerAddress,
-    },
-    transactions: {
-      InheritanceCore: inheritanceCore.deploymentTransaction()?.hash,
-      EmergencyManager: emergencyManager.deploymentTransaction()?.hash,
-      TimingManager: timingManager.deploymentTransaction()?.hash,
-    },
-  };
-
-  // For Somnia network specifics
-  if (network.chainId === 30380n) {
-    console.log("\n🌐 Somnia Network Deployment Complete!");
-    console.log("Explorer URLs:");
-    if (network.name.includes("testnet")) {
-      console.log(
-        "InheritanceCore:",
-        `https://testnet-explorer.somnia.network/address/${inheritanceCoreAddress}`,
-      );
-      console.log(
-        "EmergencyManager:",
-        `https://testnet-explorer.somnia.network/address/${emergencyManagerAddress}`,
-      );
-    } else {
-      console.log(
-        "InheritanceCore:",
-        `https://explorer.somnia.network/address/${inheritanceCoreAddress}`,
-      );
-      console.log(
-        "EmergencyManager:",
-        `https://explorer.somnia.network/address/${emergencyManagerAddress}`,
-      );
-    }
-
-    console.log("\n💡 Next Steps:");
-    console.log("1. Verify contracts on Somnia explorer");
-    console.log("2. Update frontend configuration with deployed addresses");
-    console.log(
-      "3. Test inheritance creation with 15-second timing on testnet",
-    );
-    console.log("4. Use setTestingMode() for rapid development iterations");
-    console.log("5. Switch to setProductionMode() before mainnet deployment");
-    console.log("6. Set up monitoring and alerts");
+  if (balance === 0n) {
+    throw new Error("Insufficient STT balance for deployment");
   }
 
-  // Gas usage summary
-  const inheritanceCoreReceipt = await inheritanceCore
-    .deploymentTransaction()
-    ?.wait();
-  const emergencyManagerReceipt = await emergencyManager
-    .deploymentTransaction()
-    ?.wait();
+  console.log("\nDeploying InheritanceCore contract...");
 
-  console.log("\n⛽ Gas Usage Summary:");
-  console.log(
-    "InheritanceCore deployment:",
-    inheritanceCoreReceipt?.gasUsed.toString(),
-    "gas",
-  );
-  console.log(
-    "EmergencyManager deployment:",
-    emergencyManagerReceipt?.gasUsed.toString(),
-    "gas",
-  );
+  try {
+    const InheritanceCore = await ethers.getContractFactory("InheritanceCore");
 
-  const totalGas =
-    (inheritanceCoreReceipt?.gasUsed || 0n) +
-    (emergencyManagerReceipt?.gasUsed || 0n);
-  console.log("Total gas used:", totalGas.toString(), "gas");
+    console.log("Estimating deployment gas...");
 
-  return deploymentInfo;
+    const contract = await InheritanceCore.deploy();
+
+    console.log("Waiting for deployment confirmation...");
+    await contract.waitForDeployment();
+
+    const contractAddress = await contract.getAddress();
+    const deploymentTx = contract.deploymentTransaction();
+
+    if (!deploymentTx) {
+      throw new Error("Deployment transaction not found");
+    }
+
+    console.log("\n=== DEPLOYMENT SUCCESSFUL ===");
+    console.log(`Contract Address: ${contractAddress}`);
+    console.log(`Transaction Hash: ${deploymentTx.hash}`);
+    console.log(`Block Number: ${deploymentTx.blockNumber}`);
+    console.log(`Gas Used: ${deploymentTx.gasLimit}`);
+
+    // Wait for additional confirmations
+    console.log("\nWaiting for confirmations...");
+    const receipt = await deploymentTx.wait(3);
+
+    if (!receipt) {
+      throw new Error("Transaction receipt not found");
+    }
+
+    console.log(`Confirmed in block: ${receipt.blockNumber}`);
+    console.log(`Actual gas used: ${receipt.gasUsed}`);
+
+    // Verify contract is deployed correctly
+    console.log("\nVerifying deployment...");
+    const code = await ethers.provider.getCode(contractAddress);
+    if (code === "0x") {
+      throw new Error("Contract deployment failed - no bytecode found");
+    }
+
+    // Test basic contract functionality
+    console.log("Testing contract functionality...");
+    const hasAdminRole = await contract.hasRole(
+      await contract.DEFAULT_ADMIN_ROLE(),
+      deployer.address
+    );
+
+    if (!hasAdminRole) {
+      throw new Error("Contract admin role not properly assigned");
+    }
+
+    console.log("✅ Contract functionality verified");
+
+    // Save deployment information
+    const deploymentInfo = {
+      network: process.env.HARDHAT_NETWORK || "hardhat",
+      contractName: "InheritanceCore",
+      contractAddress: contractAddress,
+      deployer: deployer.address,
+      deploymentTxHash: deploymentTx.hash,
+      blockNumber: receipt.blockNumber,
+      gasUsed: receipt.gasUsed.toString(),
+      timestamp: new Date().toISOString(),
+      constructorArgs: [],
+    };
+
+    const outputPath = join(__dirname, "../deployments.json");
+    let deployments = [];
+
+    try {
+      const existingData = require(outputPath);
+      deployments = Array.isArray(existingData) ? existingData : [existingData];
+    } catch {
+      // File doesn't exist or is invalid, start fresh
+    }
+
+    deployments.push(deploymentInfo);
+    writeFileSync(outputPath, JSON.stringify(deployments, null, 2));
+
+    console.log(`\n📝 Deployment info saved to: ${outputPath}`);
+
+    // Contract verification instructions
+    console.log("\n=== VERIFICATION INSTRUCTIONS ===");
+    console.log("To verify the contract on block explorer, run:");
+    console.log(
+      `npx hardhat verify --network ${process.env.HARDHAT_NETWORK} ${contractAddress}`
+    );
+
+    console.log("\n=== USAGE INSTRUCTIONS ===");
+    console.log("1. Create inheritance:");
+    console.log(
+      `   contract.createInheritance(name, executor, requiresConfirmation, timeLock)`
+    );
+    console.log("2. Add beneficiaries:");
+    console.log(
+      `   contract.addBeneficiary(inheritanceId, beneficiary, allocationBasisPoints)`
+    );
+    console.log("3. Deposit assets:");
+    console.log(`   contract.depositSTT(inheritanceId, { value: amount })`);
+    console.log("4. Trigger inheritance:");
+    console.log(`   contract.triggerInheritance(inheritanceId)`);
+    console.log("5. Claim assets:");
+    console.log(`   contract.claimAssets(inheritanceId)`);
+
+    return {
+      contractAddress,
+      deploymentTxHash: deploymentTx.hash,
+      blockNumber: receipt.blockNumber,
+    };
+  } catch (error) {
+    console.error("\n❌ DEPLOYMENT FAILED");
+    console.error(`Error: ${error}`);
+
+    if (error instanceof Error) {
+      console.error(`Message: ${error.message}`);
+
+      if (error.message.includes("insufficient funds")) {
+        console.error("\n💡 Solution: Add more STT to your account");
+      } else if (error.message.includes("gas")) {
+        console.error("\n💡 Solution: Increase gas limit or gas price");
+      } else if (error.message.includes("nonce")) {
+        console.error(
+          "\n💡 Solution: Wait for pending transactions to complete"
+        );
+      }
+    }
+
+    throw error;
+  }
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main()
-  .then((deploymentInfo) => {
-    console.log("\n✨ Deployment completed successfully!");
+  .then((result) => {
+    console.log("\n🎉 DEPLOYMENT COMPLETED SUCCESSFULLY");
     process.exit(0);
   })
   .catch((error) => {
-    console.error("❌ Deployment failed:", error);
+    console.error("\n💥 DEPLOYMENT SCRIPT FAILED");
+    console.error(error);
     process.exit(1);
   });

@@ -363,7 +363,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "depositETH",
+    name: "depositSTT",
     outputs: [],
     stateMutability: "payable",
     type: "function",
@@ -402,7 +402,7 @@ const _abi = [
           },
           {
             internalType: "uint256",
-            name: "claimedETH",
+            name: "claimedSTT",
             type: "uint256",
           },
           {
@@ -432,7 +432,7 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "getClaimableETH",
+    name: "getClaimableSTT",
     outputs: [
       {
         internalType: "uint256",
@@ -534,12 +534,12 @@ const _abi = [
           },
           {
             internalType: "uint256",
-            name: "totalETHDeposited",
+            name: "totalSTTDeposited",
             type: "uint256",
           },
           {
             internalType: "uint256",
-            name: "totalETHClaimed",
+            name: "totalSTTClaimed",
             type: "uint256",
           },
         ],
