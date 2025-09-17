@@ -73,7 +73,6 @@ export declare namespace IInheritanceCore {
 
   export type InheritanceDataStruct = {
     owner: AddressLike;
-    name: string;
     status: BigNumberish;
     createdAt: BigNumberish;
     triggeredAt: BigNumberish;
@@ -87,7 +86,6 @@ export declare namespace IInheritanceCore {
 
   export type InheritanceDataStructOutput = [
     owner: string,
-    name: string,
     status: bigint,
     createdAt: bigint,
     triggeredAt: bigint,
@@ -99,7 +97,6 @@ export declare namespace IInheritanceCore {
     totalSTTClaimed: bigint
   ] & {
     owner: string;
-    name: string;
     status: bigint;
     createdAt: bigint;
     triggeredAt: bigint;
@@ -148,12 +145,15 @@ export interface InheritanceCoreInterface extends Interface {
       | "depositERC20"
       | "depositERC721"
       | "depositSTT"
+      | "emergencyPause"
+      | "getAssetClaimingStatus"
       | "getBeneficiaryInfo"
       | "getClaimableSTT"
       | "getInheritanceData"
       | "getRoleAdmin"
       | "getTotalAssets"
       | "grantRole"
+      | "hasClaimedSTT"
       | "hasRole"
       | "onERC721Received"
       | "renounceRole"
@@ -166,6 +166,7 @@ export interface InheritanceCoreInterface extends Interface {
     nameOrSignatureOrTopic:
       | "AssetClaimed"
       | "AssetDeposited"
+      | "AssetDistributionCalculated"
       | "BeneficiaryAdded"
       | "InheritanceCompleted"
       | "InheritanceCreated"
@@ -193,7 +194,7 @@ export interface InheritanceCoreInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createInheritance",
-    values: [string, AddressLike, boolean, IInheritanceCore.TimeLockStruct]
+    values: [AddressLike, boolean, IInheritanceCore.TimeLockStruct]
   ): string;
   encodeFunctionData(
     functionFragment: "depositERC20",
@@ -206,6 +207,14 @@ export interface InheritanceCoreInterface extends Interface {
   encodeFunctionData(
     functionFragment: "depositSTT",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "emergencyPause",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAssetClaimingStatus",
+    values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getBeneficiaryInfo",
@@ -230,6 +239,10 @@ export interface InheritanceCoreInterface extends Interface {
   encodeFunctionData(
     functionFragment: "grantRole",
     values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hasClaimedSTT",
+    values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "hasRole",
@@ -286,6 +299,14 @@ export interface InheritanceCoreInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "depositSTT", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "emergencyPause",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAssetClaimingStatus",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getBeneficiaryInfo",
     data: BytesLike
   ): Result;
@@ -306,6 +327,10 @@ export interface InheritanceCoreInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "hasClaimedSTT",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "onERC721Received",
@@ -391,6 +416,31 @@ export namespace AssetDepositedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace AssetDistributionCalculatedEvent {
+  export type InputTuple = [
+    inheritanceId: BigNumberish,
+    beneficiary: AddressLike,
+    assetIndex: BigNumberish,
+    tokenCount: BigNumberish
+  ];
+  export type OutputTuple = [
+    inheritanceId: bigint,
+    beneficiary: string,
+    assetIndex: bigint,
+    tokenCount: bigint
+  ];
+  export interface OutputObject {
+    inheritanceId: bigint;
+    beneficiary: string;
+    assetIndex: bigint;
+    tokenCount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export namespace BeneficiaryAddedEvent {
   export type InputTuple = [
     inheritanceId: BigNumberish,
@@ -436,19 +486,16 @@ export namespace InheritanceCreatedEvent {
   export type InputTuple = [
     inheritanceId: BigNumberish,
     owner: AddressLike,
-    name: string,
     timestamp: BigNumberish
   ];
   export type OutputTuple = [
     inheritanceId: bigint,
     owner: string,
-    name: string,
     timestamp: bigint
   ];
   export interface OutputObject {
     inheritanceId: bigint;
     owner: string;
-    name: string;
     timestamp: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
@@ -602,7 +649,6 @@ export interface InheritanceCore extends BaseContract {
 
   createInheritance: TypedContractMethod<
     [
-      name: string,
       executor: AddressLike,
       requiresConfirmation: boolean,
       timeLock: IInheritanceCore.TimeLockStruct
@@ -637,6 +683,14 @@ export interface InheritanceCore extends BaseContract {
     "payable"
   >;
 
+  emergencyPause: TypedContractMethod<[], [void], "nonpayable">;
+
+  getAssetClaimingStatus: TypedContractMethod<
+    [inheritanceId: BigNumberish, beneficiary: AddressLike],
+    [boolean[]],
+    "view"
+  >;
+
   getBeneficiaryInfo: TypedContractMethod<
     [inheritanceId: BigNumberish, beneficiary: AddressLike],
     [IInheritanceCore.BeneficiaryStructOutput],
@@ -667,6 +721,12 @@ export interface InheritanceCore extends BaseContract {
     [role: BytesLike, account: AddressLike],
     [void],
     "nonpayable"
+  >;
+
+  hasClaimedSTT: TypedContractMethod<
+    [inheritanceId: BigNumberish, beneficiary: AddressLike],
+    [boolean],
+    "view"
   >;
 
   hasRole: TypedContractMethod<
@@ -733,7 +793,6 @@ export interface InheritanceCore extends BaseContract {
     nameOrSignature: "createInheritance"
   ): TypedContractMethod<
     [
-      name: string,
       executor: AddressLike,
       requiresConfirmation: boolean,
       timeLock: IInheritanceCore.TimeLockStruct
@@ -766,6 +825,16 @@ export interface InheritanceCore extends BaseContract {
   getFunction(
     nameOrSignature: "depositSTT"
   ): TypedContractMethod<[inheritanceId: BigNumberish], [void], "payable">;
+  getFunction(
+    nameOrSignature: "emergencyPause"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "getAssetClaimingStatus"
+  ): TypedContractMethod<
+    [inheritanceId: BigNumberish, beneficiary: AddressLike],
+    [boolean[]],
+    "view"
+  >;
   getFunction(
     nameOrSignature: "getBeneficiaryInfo"
   ): TypedContractMethod<
@@ -803,6 +872,13 @@ export interface InheritanceCore extends BaseContract {
     [role: BytesLike, account: AddressLike],
     [void],
     "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "hasClaimedSTT"
+  ): TypedContractMethod<
+    [inheritanceId: BigNumberish, beneficiary: AddressLike],
+    [boolean],
+    "view"
   >;
   getFunction(
     nameOrSignature: "hasRole"
@@ -852,6 +928,13 @@ export interface InheritanceCore extends BaseContract {
     AssetDepositedEvent.InputTuple,
     AssetDepositedEvent.OutputTuple,
     AssetDepositedEvent.OutputObject
+  >;
+  getEvent(
+    key: "AssetDistributionCalculated"
+  ): TypedContractEvent<
+    AssetDistributionCalculatedEvent.InputTuple,
+    AssetDistributionCalculatedEvent.OutputTuple,
+    AssetDistributionCalculatedEvent.OutputObject
   >;
   getEvent(
     key: "BeneficiaryAdded"
@@ -926,6 +1009,17 @@ export interface InheritanceCore extends BaseContract {
       AssetDepositedEvent.OutputObject
     >;
 
+    "AssetDistributionCalculated(uint256,address,uint256,uint256)": TypedContractEvent<
+      AssetDistributionCalculatedEvent.InputTuple,
+      AssetDistributionCalculatedEvent.OutputTuple,
+      AssetDistributionCalculatedEvent.OutputObject
+    >;
+    AssetDistributionCalculated: TypedContractEvent<
+      AssetDistributionCalculatedEvent.InputTuple,
+      AssetDistributionCalculatedEvent.OutputTuple,
+      AssetDistributionCalculatedEvent.OutputObject
+    >;
+
     "BeneficiaryAdded(uint256,address,uint256,uint256)": TypedContractEvent<
       BeneficiaryAddedEvent.InputTuple,
       BeneficiaryAddedEvent.OutputTuple,
@@ -948,7 +1042,7 @@ export interface InheritanceCore extends BaseContract {
       InheritanceCompletedEvent.OutputObject
     >;
 
-    "InheritanceCreated(uint256,address,string,uint256)": TypedContractEvent<
+    "InheritanceCreated(uint256,address,uint256)": TypedContractEvent<
       InheritanceCreatedEvent.InputTuple,
       InheritanceCreatedEvent.OutputTuple,
       InheritanceCreatedEvent.OutputObject

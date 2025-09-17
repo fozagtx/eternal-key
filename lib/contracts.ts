@@ -1,27 +1,26 @@
 import { Address } from "viem";
 
-// Contract addresses - Fresh deployment on Somnia Testnet
+// Contract addresses - Latest deployment on Somnia Testnet
 export const CONTRACT_ADDRESSES = {
-  InheritanceCore: "0xD83Bf43AF32269732e96E88aa8D0745416f1A9F2" as Address,
+  InheritanceCore: "0x2E68CbB4BdA0b44fed48FA98cE3bff799fa7Fb3E" as Address,
   TimingManager: "0x848A1fBfde1e51F6091e8610Ff4Cf75Cfb638360" as Address,
   EmergencyManager: "0x9d7b2D97D4A85A2AbC882F8152D4791553789374" as Address,
 };
 
-// Contract ABIs
+// Contract ABIs - Extracted from compiled contract artifact
 export const INHERITANCE_CORE_ABI = [
   // Core functions
   {
     inputs: [
-      { internalType: "string", name: "name", type: "string" },
       { internalType: "address", name: "executor", type: "address" },
       { internalType: "bool", name: "requiresConfirmation", type: "bool" },
       {
-        internalType: "tuple",
+        internalType: "struct IInheritanceCore.TimeLock",
         name: "timeLock",
         type: "tuple",
         components: [
           {
-            internalType: "enum DistributionType",
+            internalType: "enum IInheritanceCore.DistributionType",
             name: "distributionType",
             type: "uint8",
           },
@@ -67,7 +66,7 @@ export const INHERITANCE_CORE_ABI = [
     inputs: [
       { internalType: "uint256", name: "inheritanceId", type: "uint256" },
     ],
-    name: "depositETH",
+    name: "depositSTT",
     outputs: [],
     stateMutability: "payable",
     type: "function",
@@ -119,39 +118,25 @@ export const INHERITANCE_CORE_ABI = [
     name: "getInheritanceData",
     outputs: [
       {
-        internalType: "tuple",
+        internalType: "struct IInheritanceCore.InheritanceData",
         name: "",
         type: "tuple",
         components: [
           { internalType: "address", name: "owner", type: "address" },
-          { internalType: "string", name: "name", type: "string" },
           {
-            internalType: "enum InheritanceStatus",
+            internalType: "enum IInheritanceCore.InheritanceStatus",
             name: "status",
             type: "uint8",
           },
           { internalType: "uint256", name: "createdAt", type: "uint256" },
           { internalType: "uint256", name: "triggeredAt", type: "uint256" },
           {
-            internalType: "uint256",
-            name: "totalETHDeposited",
-            type: "uint256",
-          },
-          { internalType: "uint256", name: "totalETHClaimed", type: "uint256" },
-          {
-            internalType: "uint256",
-            name: "totalBeneficiaries",
-            type: "uint256",
-          },
-          { internalType: "address", name: "executor", type: "address" },
-          { internalType: "bool", name: "requiresConfirmation", type: "bool" },
-          {
-            internalType: "tuple",
+            internalType: "struct IInheritanceCore.TimeLock",
             name: "timeLock",
             type: "tuple",
             components: [
               {
-                internalType: "enum DistributionType",
+                internalType: "enum IInheritanceCore.DistributionType",
                 name: "distributionType",
                 type: "uint8",
               },
@@ -178,6 +163,19 @@ export const INHERITANCE_CORE_ABI = [
               },
             ],
           },
+          {
+            internalType: "uint256",
+            name: "totalBeneficiaries",
+            type: "uint256",
+          },
+          { internalType: "bool", name: "requiresConfirmation", type: "bool" },
+          { internalType: "address", name: "executor", type: "address" },
+          {
+            internalType: "uint256",
+            name: "totalSTTDeposited",
+            type: "uint256",
+          },
+          { internalType: "uint256", name: "totalSTTClaimed", type: "uint256" },
         ],
       },
     ],
@@ -192,7 +190,7 @@ export const INHERITANCE_CORE_ABI = [
     name: "getBeneficiaryInfo",
     outputs: [
       {
-        internalType: "tuple",
+        internalType: "struct IInheritanceCore.Beneficiary",
         name: "",
         type: "tuple",
         components: [
@@ -203,8 +201,8 @@ export const INHERITANCE_CORE_ABI = [
             type: "uint256",
           },
           { internalType: "bool", name: "isActive", type: "bool" },
+          { internalType: "uint256", name: "claimedSTT", type: "uint256" },
           { internalType: "uint256", name: "addedAt", type: "uint256" },
-          { internalType: "uint256", name: "claimedETH", type: "uint256" },
         ],
       },
     ],
@@ -216,7 +214,7 @@ export const INHERITANCE_CORE_ABI = [
       { internalType: "uint256", name: "inheritanceId", type: "uint256" },
       { internalType: "address", name: "beneficiary", type: "address" },
     ],
-    name: "getClaimableETH",
+    name: "getClaimableSTT",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",
@@ -228,11 +226,15 @@ export const INHERITANCE_CORE_ABI = [
     name: "getTotalAssets",
     outputs: [
       {
-        internalType: "tuple[]",
+        internalType: "struct IInheritanceCore.Asset[]",
         name: "",
         type: "tuple[]",
         components: [
-          { internalType: "enum AssetType", name: "assetType", type: "uint8" },
+          {
+            internalType: "enum IInheritanceCore.AssetType",
+            name: "assetType",
+            type: "uint8",
+          },
           { internalType: "address", name: "contractAddress", type: "address" },
           { internalType: "uint256", name: "amount", type: "uint256" },
           { internalType: "uint256[]", name: "tokenIds", type: "uint256[]" },
@@ -241,6 +243,27 @@ export const INHERITANCE_CORE_ABI = [
         ],
       },
     ],
+    stateMutability: "view",
+    type: "function",
+  },
+  // Additional view functions for completeness
+  {
+    inputs: [
+      { internalType: "uint256", name: "inheritanceId", type: "uint256" },
+      { internalType: "address", name: "beneficiary", type: "address" },
+    ],
+    name: "hasClaimedSTT",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "inheritanceId", type: "uint256" },
+      { internalType: "address", name: "beneficiary", type: "address" },
+    ],
+    name: "getAssetClaimingStatus",
+    outputs: [{ internalType: "bool[]", name: "claimed", type: "bool[]" }],
     stateMutability: "view",
     type: "function",
   },
@@ -260,7 +283,6 @@ export const INHERITANCE_CORE_ABI = [
         name: "owner",
         type: "address",
       },
-      { indexed: false, internalType: "string", name: "name", type: "string" },
       {
         indexed: false,
         internalType: "uint256",
@@ -313,12 +335,12 @@ export const INHERITANCE_CORE_ABI = [
       },
       {
         indexed: false,
-        internalType: "uint8",
+        internalType: "enum IInheritanceCore.AssetType",
         name: "assetType",
         type: "uint8",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "contractAddress",
         type: "address",
@@ -345,9 +367,102 @@ export const INHERITANCE_CORE_ABI = [
     name: "AssetDeposited",
     type: "event",
   },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "inheritanceId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "beneficiary",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "enum IInheritanceCore.AssetType",
+        name: "assetType",
+        type: "uint8",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "contractAddress",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256[]",
+        name: "tokenIds",
+        type: "uint256[]",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "timestamp",
+        type: "uint256",
+      },
+    ],
+    name: "AssetClaimed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "inheritanceId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "triggeredBy",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "timestamp",
+        type: "uint256",
+      },
+    ],
+    name: "InheritanceTriggered",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "inheritanceId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "timestamp",
+        type: "uint256",
+      },
+    ],
+    name: "InheritanceCompleted",
+    type: "event",
+  },
 ] as const;
 
-// Enums
+// Enums - Updated to match contract
 export enum InheritanceStatus {
   ACTIVE = 0,
   TRIGGERED = 1,
@@ -356,7 +471,7 @@ export enum InheritanceStatus {
 }
 
 export enum AssetType {
-  ETH = 0,
+  STT = 0, // Updated from ETH to STT
   ERC20 = 1,
   ERC721 = 2,
 }
@@ -368,27 +483,26 @@ export enum DistributionType {
   MILESTONE_BASED = 3,
 }
 
-// Type definitions
+// Type definitions - Updated to match contract structure
 export interface InheritanceData {
   owner: string;
-  name: string;
   status: InheritanceStatus;
   createdAt: bigint;
   triggeredAt: bigint;
-  totalETHDeposited: bigint;
-  totalETHClaimed: bigint;
-  totalBeneficiaries: bigint;
-  executor: string;
-  requiresConfirmation: boolean;
   timeLock: TimeLock;
+  totalBeneficiaries: bigint;
+  requiresConfirmation: boolean;
+  executor: string;
+  totalSTTDeposited: bigint; // Updated from totalETHDeposited
+  totalSTTClaimed: bigint; // Updated from totalETHClaimed
 }
 
 export interface Beneficiary {
   wallet: string;
   allocationBasisPoints: bigint;
   isActive: boolean;
+  claimedSTT: bigint; // Updated from claimedETH
   addedAt: bigint;
-  claimedETH: bigint;
 }
 
 export interface Asset {

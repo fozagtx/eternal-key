@@ -27,7 +27,6 @@ export function useInheritanceContract() {
 
   // Create a new inheritance vault
   const createInheritance = async (
-    name: string,
     executor: Address,
     requiresConfirmation: boolean,
     timeLock: TimeLock,
@@ -35,7 +34,6 @@ export function useInheritanceContract() {
     if (!address) throw new Error("Wallet not connected");
 
     const args = [
-      name,
       executor,
       requiresConfirmation,
       {
@@ -70,12 +68,12 @@ export function useInheritanceContract() {
     });
   };
 
-  // Deposit ETH to inheritance vault
-  const depositETH = async (inheritanceId: bigint, amount: string) => {
+  // Deposit STT to inheritance vault
+  const depositSTT = async (inheritanceId: bigint, amount: string) => {
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: "depositETH",
+      functionName: "depositSTT",
       args: [inheritanceId],
       value: parseEther(amount),
     });
@@ -133,7 +131,7 @@ export function useInheritanceContract() {
     // Write functions
     createInheritance,
     addBeneficiary,
-    depositETH,
+    depositSTT,
     depositERC20,
     depositERC721,
     triggerInheritance,
@@ -189,15 +187,15 @@ export function useBeneficiaryInfo(
   };
 }
 
-// Hook to get claimable ETH amount
-export function useClaimableETH(inheritanceId: bigint, beneficiary?: Address) {
+// Hook to get claimable STT amount
+export function useClaimableSTT(inheritanceId: bigint, beneficiary?: Address) {
   const { address } = useAccount();
   const targetAddress = beneficiary || address;
 
   return useReadContract({
     address: CONTRACT_ADDRESSES.InheritanceCore,
     abi: INHERITANCE_CORE_ABI,
-    functionName: "getClaimableETH",
+    functionName: "getClaimableSTT",
     args: [inheritanceId, targetAddress!],
     query: {
       enabled: !!inheritanceId && !!targetAddress,

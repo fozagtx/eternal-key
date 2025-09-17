@@ -2,7 +2,7 @@
 
 import { useAccount } from "wagmi";
 import { ConnectKitButton } from "connectkit";
-import { RealInheritanceForm } from "@/components/inheritance/RealInheritanceForm";
+import { EnhancedInheritanceForm } from "@/components/inheritance/EnhancedInheritanceForm";
 
 export function Dashboard() {
   const { address, isConnected } = useAccount();
@@ -55,8 +55,8 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Main Content - Real Inheritance Form */}
-        <RealInheritanceForm />
+        {/* Main Content - Enhanced Inheritance Form */}
+        <EnhancedInheritanceForm />
       </div>
     </div>
   );

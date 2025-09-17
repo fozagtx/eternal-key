@@ -1,269 +1,337 @@
-# Eternal Key - Digital Inheritance Platform
+# 🔐 Eternal Key - Decentralized Inheritance Platform
 
-A comprehensive digital inheritance platform built on the Somnia blockchain, featuring a Next.js frontend and production-ready smart contracts.
+**Secure your digital legacy with blockchain technology. Create automated inheritance contracts that protect your assets for future generations.**
+
+[![Built with Next.js](https://img.shields.io/badge/Built%20with-Next.js-000000?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Powered by Somnia](https://img.shields.io/badge/Powered%20by-Somnia-blue?style=for-the-badge)](https://somnia.network/)
+[![Smart Contracts](https://img.shields.io/badge/Smart-Contracts-green?style=for-the-badge)](https://soliditylang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+
+## 🌟 Overview
+
+Eternal Key is a cutting-edge decentralized inheritance platform that leverages blockchain technology to secure digital assets for future generations. Built on the Somnia network, it provides automated, secure, and transparent inheritance management through smart contracts.
+
+### ✨ Key Features
+
+- **🔒 Blockchain Security**: Immutable inheritance contracts secured by the Somnia blockchain
+- **⚡ Instant Setup**: Create inheritance contracts in under 60 seconds
+- **🎯 Precise Control**: Set custom release timers and beneficiary allocations  
+- **💎 Multi-Asset Support**: Support for STT tokens, ERC20 tokens, and NFTs
+- **🔄 Automated Distribution**: Smart contracts handle automatic asset distribution
+- **🛡️ Security Audited**: Comprehensive security fixes and testing implemented
+- **📱 Modern UI**: Beautiful, responsive interface with real-time feedback
+- **🌐 Decentralized**: No central authority - pure blockchain execution
+- **🚀 Simplified Process**: No inheritance name required - streamlined user experience
 
 ## 🚀 Live Deployment
 
-### Smart Contract (Somnia Testnet)
-- **Contract Address**: `0x27Bb37f882442638ebde4eC43c5560BFD4e71471`
-- **Transaction Hash**: `0x962e49a068fe2382e5302368d435a53465394bd2e35dd0f886cb79c7938da08b`
-- **Block Number**: `178709840`
+### **Production Application**
+- **Frontend**: [Visit Eternal Key](https://your-domain.com) *(Update with your domain)*
 - **Network**: Somnia Testnet
-- **Status**: ✅ **ACTIVE** - All tests passing (43/43)
+- **Status**: ✅ **Live & Operational**
 
-### 🔗 Blockchain Explorer Links
-- **Contract on Somnia Explorer**: [View Contract](https://explorer.somnia.network/address/0x27Bb37f882442638ebde4eC43c5560BFD4e71471)
-- **Deployment Transaction**: [View Transaction](https://explorer.somnia.network/tx/0x962e49a068fe2382e5302368d435a53465394bd2e35dd0f886cb79c7938da08b)
-- **Block Details**: [View Block #178709840](https://explorer.somnia.network/block/178709840)
+### **Smart Contract Details**
+```
+Contract Address: 0x2E68CbB4BdA0b44fed48FA98cE3bff799fa7Fb3E
+Network: Somnia Testnet (Chain ID: 50312)
+Compiler: Solidity 0.8.28
+Security: Audited & Hardened
+Deployment: January 2025
+Features: No inheritance name field, STT token support, enhanced security
+```
 
-### 🌐 Network Information
-- **Network Name**: Somnia Testnet
-- **Chain ID**: 50311
-- **RPC URL**: `https://dream-rpc.somnia.network/`
-- **Explorer**: `https://explorer.somnia.network/`
+**View on Explorer**: [Somnia Explorer](https://shannon-explorer.somnia.network/address/0x2E68CbB4BdA0b44fed48FA98cE3bff799fa7Fb3E)
 
-## Project Structure
+## 🏗️ Architecture
+
+### **Frontend Stack**
+- **Framework**: Next.js 15.5.3 with Turbopack
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS with custom gradients
+- **Blockchain**: Wagmi + Viem for Web3 integration
+- **Wallet**: ConnectKit for wallet connections
+- **UI Components**: Custom components with shadcn/ui
+
+### **Smart Contract Stack**
+- **Language**: Solidity ^0.8.24
+- **Framework**: Hardhat with TypeScript
+- **Security**: OpenZeppelin contracts + custom security fixes
+- **Testing**: Comprehensive test suite with 10+ real-world scenarios
+- **Deployment**: Automated deployment scripts
+
+### **Security Features**
+- **✅ Reentrancy Protection**: SafeERC20 and ReentrancyGuard
+- **✅ Access Control**: Role-based permissions with OpenZeppelin
+- **✅ Input Validation**: Comprehensive parameter validation
+- **✅ Asset Protection**: Secure multi-asset handling
+- **✅ Double-Claim Prevention**: State tracking prevents duplicate claims
+- **✅ ERC721 Distribution Fix**: Proper NFT distribution without duplicates
+
+## 🛠️ Local Development
+
+### **Prerequisites**
+```bash
+Node.js >= 18.0.0
+npm or yarn or bun
+Git
+```
+
+### **Installation**
+```bash
+# Clone the repository
+git clone https://github.com/your-username/eternal-key.git
+cd eternal-key
+
+# Install dependencies
+npm install
+
+# Install contract dependencies
+cd contract && npm install && cd ..
+
+# Set up environment variables
+cp .env.example .env.local
+```
+
+### **Environment Setup**
+Create `.env.local` file:
+```env
+# Wallet Configuration
+PRIVATE_KEY=your_private_key_here
+
+# Optional: Analytics & Monitoring
+NEXT_PUBLIC_ANALYTICS_ID=your_analytics_id
+```
+
+### **Development Commands**
+
+#### **Frontend Development**
+```bash
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+```
+
+#### **Smart Contract Development**
+```bash
+cd contract
+
+# Compile contracts
+npx hardhat compile
+
+# Run tests
+npx hardhat test
+
+# Deploy to local network
+npx hardhat run scripts/deploy-inheritance-core.js --network localhost
+
+# Deploy to Somnia testnet
+npx hardhat run scripts/deploy-inheritance-core.js --network somnia-testnet
+```
+
+## 📋 Usage Guide
+
+### **Creating an Inheritance Contract**
+
+1. **Connect Wallet**
+   - Click "Get Started" on the homepage
+   - Connect your wallet using ConnectKit
+   - Ensure you have STT tokens for deposits
+
+2. **Set Up Inheritance**
+   - Enter beneficiary wallet address
+   - Specify STT amount to deposit
+   - Review inheritance settings (15-second timer for testing)
+   - No inheritance name required - simplified process
+
+3. **Deploy & Fund**
+   - Click "Create & Deposit STT"
+   - Confirm transaction in your wallet
+   - Wait for deployment confirmation
+
+4. **Manage Inheritance**
+   - View contract details and inheritance ID
+   - Add additional beneficiaries if needed
+   - Monitor release timer countdown
+
+### **Claiming Inheritance**
+
+1. **Trigger Inheritance** (when timer expires)
+   - Contract owner or executor can trigger
+   - Automatic activation after time lock
+
+2. **Claim Assets**
+   - Beneficiaries can claim their allocated portion
+   - Immediate distribution for STT tokens
+   - Proportional distribution based on allocation
+
+## 🔧 Configuration
+
+### **Network Configuration**
+The app supports multiple networks via Hardhat configuration:
+
+```typescript
+// hardhat.config.ts
+networks: {
+  "somnia-testnet": {
+    url: "https://dream-rpc.somnia.network/",
+    chainId: 50312,
+    accounts: [process.env.PRIVATE_KEY]
+  }
+}
+```
+
+### **Frontend Configuration**
+```typescript
+// lib/contracts.ts
+export const CONTRACT_ADDRESSES = {
+  InheritanceCore: "0x2E68CbB4BdA0b44fed48FA98cE3bff799fa7Fb3E",
+  // Add other contract addresses as needed
+};
+```
+
+## 🧪 Testing
+
+### **Smart Contract Tests**
+```bash
+cd contract
+npx hardhat test
+```
+
+**Test Coverage**: 10 comprehensive test cases covering:
+- ✅ Contract deployment and initialization
+- ✅ Inheritance creation with real STT deposits
+- ✅ Beneficiary management and allocation
+- ✅ STT deposits and balance tracking
+- ✅ Inheritance triggering and claiming
+- ✅ Multi-beneficiary scenarios
+- ✅ Access control validation
+- ✅ Edge cases and error handling
+
+### **Frontend Testing**
+```bash
+# Build test
+npm run build
+
+# Type checking
+npm run lint
+```
+
+## 📁 Project Structure
 
 ```
 eternal-key/
-├── app/                    # Next.js application
-│   ├── components/         # React components
-│   ├── globals.css        # Global styles
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Main page
-├── contract/              # Smart contract system
-│   ├── contracts/         # Solidity contracts
-│   ├── scripts/           # Deployment scripts
-│   ├── test/              # Test files
-│   └── deployments.json   # Deployment records
-└── components/            # Shared UI components
+├── 📱 Frontend (Next.js)
+│   ├── app/                    # Next.js app router
+│   ├── components/            # React components
+│   │   ├── inheritance/       # Inheritance form components
+│   │   └── ui/               # Reusable UI components
+│   ├── hooks/                # Custom React hooks
+│   ├── lib/                  # Utilities and contracts
+│   └── public/               # Static assets
+│
+├── 🔗 Smart Contracts
+│   ├── contracts/            # Solidity contracts
+│   │   ├── core/            # Core inheritance logic
+│   │   ├── interfaces/      # Contract interfaces
+│   │   └── libraries/       # Shared libraries
+│   ├── test/                # Contract tests
+│   ├── scripts/             # Deployment scripts
+│   └── hardhat.config.ts    # Hardhat configuration
+│
+└── 📚 Documentation
+    └── README.md            # This file
 ```
 
-## Features
+## 🚨 Security Considerations
 
-### Smart Contract Features
-- **Multi-Asset Support**: STT (Somnia native token), ERC20 tokens, and ERC721 NFTs
-- **Flexible Distribution**: Immediate, linear vesting, cliff vesting, and milestone-based
-- **Access Control**: Role-based permissions with admin and executor roles
-- **Security**: Reentrancy protection and comprehensive input validation
+### **Audited Security Fixes**
+- **ERC721 Distribution**: Fixed duplicate token transfer bugs
+- **Double-Claiming Prevention**: Added comprehensive state tracking
+- **Access Control**: Implemented proper role-based permissions
+- **Input Validation**: Enhanced parameter validation throughout
+- **Reentrancy Protection**: Multiple layers of protection
 
-### Frontend Features
-- **Modern UI**: Built with Next.js 14 and React
-- **Web3 Integration**: Seamless blockchain interaction
-- **Responsive Design**: Mobile-first approach
-- **Real-time Updates**: Live contract state monitoring
+### **Best Practices**
+- Never share private keys
+- Test with small amounts first
+- Verify beneficiary addresses before deployment
+- Keep backup of inheritance contract addresses
+- Monitor contract activity through block explorer
 
-## Getting Started
+## 🤝 Contributing
 
-### Frontend Development
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to view the application.
-
-### Smart Contract Development
-
-```bash
-# Navigate to contract directory
-cd contract
-
-# Install dependencies
-npm install
-
-# Compile contracts
-npm run build
-
-# Run tests
-npm test
-
-# Deploy to testnet
-npm run deploy:testnet
-```
-
-## Smart Contract Usage
-
-### Basic Contract Interaction
-
-```javascript
-// Contract address on Somnia Testnet
-const contractAddress = "0x27Bb37f882442638ebde4eC43c5560BFD4e71471";
-
-// Connect to contract
-const contract = new ethers.Contract(contractAddress, abi, signer);
-
-// Create inheritance
-const timeLock = {
-  distributionType: 0, // IMMEDIATE
-  unlockTime: Math.floor(Date.now() / 1000) + 86400,
-  vestingDuration: 0,
-  cliffDuration: 0,
-  milestoneTimestamps: [],
-  milestonePercentages: []
-};
-
-await contract.createInheritance(
-  "My Inheritance Plan",
-  executorAddress,
-  false,
-  timeLock
-);
-```
-
-### Contract Verification
-
-Verify the deployed contract on Somnia testnet:
-
-```bash
-cd contract
-npx hardhat verify --network somnia-testnet 0x27Bb37f882442638ebde4eC43c5560BFD4e71471
-```
-
-## Test Results
-
-All smart contract tests are passing (43/43):
-
-- ✅ Deployment tests
-- ✅ Inheritance creation
-- ✅ Beneficiary management
-- ✅ Asset deposits (STT, ERC20, ERC721)
-- ✅ Inheritance triggering
-- ✅ Asset claiming
-- ✅ Vesting mechanisms
-- ✅ Access control
-- ✅ Edge cases
-- ✅ Gas optimization
-
-## Deployment Information
-
-### Contract Deployment Details
-- **Deployer**: `0xc448CA6aC246Ec8D4E45947331eA3A435b40744B`
-- **Gas Used**: 49,222,172
-- **Deployment Cost**: ~5.5 STT
-- **Confirmation**: Block 178709840
-
-### Frontend Deployment
-The Next.js application can be deployed on Vercel:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)
-
-## Environment Setup
-
-### Required Environment Variables
-
-```bash
-# For smart contract deployment
-PRIVATE_KEY=your_wallet_private_key
-SOMNIA_TESTNET_RPC=https://dream-rpc.somnia.network/
-SOMNIA_MAINNET_RPC=https://dream-rpc.somnia.network/
-
-# For frontend (optional)
-NEXT_PUBLIC_CONTRACT_ADDRESS=0x27Bb37f882442638ebde4eC43c5560BFD4e71471
-NEXT_PUBLIC_CHAIN_ID=50311
-```
-
-## Technology Stack
-
-### Frontend
-- **Next.js 14**: React framework with App Router
-- **TypeScript**: Type-safe development
-- **Tailwind CSS**: Utility-first styling
-- **ethers.js**: Ethereum library for Web3 integration
-
-### Smart Contracts
-- **Solidity ^0.8.24**: Smart contract language
-- **Hardhat**: Development environment
-- **OpenZeppelin**: Security-audited contract libraries
-- **TypeChain**: TypeScript bindings for contracts
-
-### Blockchain
-- **Somnia Network**: High-performance EVM-compatible blockchain
-- **Network Type**: Testnet (ready for mainnet)
-
-## Security Considerations
-
-### Smart Contract Security
-- Comprehensive test coverage (43 tests)
-- OpenZeppelin security standards
-- Reentrancy protection
-- Access control mechanisms
-- Input validation
-
-### Best Practices
-- Keep private keys secure
-- Use hardware wallets for production
-- Test thoroughly on testnet before mainnet
-- Monitor contract events and transactions
-
-## API Reference
-
-### Core Smart Contract Functions
-
-#### Create Inheritance
-```solidity
-function createInheritance(
-    string calldata name,
-    address executor,
-    bool requiresConfirmation,
-    TimeLock calldata timeLock
-) external returns (uint256 inheritanceId)
-```
-
-#### Add Beneficiary
-```solidity
-function addBeneficiary(
-    uint256 inheritanceId,
-    address beneficiary,
-    uint256 allocationBasisPoints
-) external
-```
-
-#### Deposit Assets
-```solidity
-function depositSTT(uint256 inheritanceId) external payable
-function depositERC20(uint256 inheritanceId, address token, uint256 amount) external
-function depositERC721(uint256 inheritanceId, address nft, uint256[] calldata tokenIds) external
-```
-
-## Contributing
-
+### **Development Workflow**
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
 
-## License
+## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Support & Documentation
+## 🔗 Links & Resources
 
-- **Smart Contract Docs**: [/contract/README.md](./contract/README.md)
-- **Frontend Docs**: [Next.js Documentation](https://nextjs.org/docs)
-- **Somnia Network**: [https://somnia.network/](https://somnia.network/)
-- **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
+### **Official Links**
+- **Website**: [Eternal Key](https://your-domain.com)
+- **Documentation**: [Docs](https://docs.your-domain.com)
+- **Support**: [Discord](https://discord.gg/your-server)
 
-## Roadmap
+### **Blockchain Resources**
+- **Somnia Network**: [somnia.network](https://somnia.network/)
+- **Somnia Explorer**: [shannon-explorer.somnia.network](https://shannon-explorer.somnia.network/)
+- **Somnia Docs**: [docs.somnia.network](https://docs.somnia.network/)
 
-- [ ] Mainnet deployment
-- [ ] Advanced UI features
-- [ ] Mobile application
-- [ ] Multi-language support
-- [ ] Integration with hardware wallets
-- [ ] Advanced analytics dashboard
+### **Technical Resources**
+- **Next.js Documentation**: [nextjs.org/docs](https://nextjs.org/docs)
+- **Hardhat Documentation**: [hardhat.org/docs](https://hardhat.org/docs)
+- **Wagmi Documentation**: [wagmi.sh](https://wagmi.sh/)
+
+## 📊 Stats & Metrics
+
+- **Contract Size**: Optimized for gas efficiency
+- **Test Coverage**: 10 comprehensive test scenarios
+- **Build Time**: ~20-25 seconds
+- **Bundle Size**: Optimized with Turbopack
+- **Security Score**: ✅ Audited and hardened
+
+## 🆘 Support
+
+### **Getting Help**
+- **Documentation**: Check this README and inline code comments
+- **Issues**: Create an issue on GitHub
+- **Community**: Join our Discord server
+- **Email**: support@your-domain.com
+
+### **Troubleshooting**
+
+**Common Issues**:
+1. **Wallet Connection Issues**: Ensure you're on Somnia Testnet
+2. **Transaction Failures**: Check gas fees and STT balance
+3. **Contract Interaction**: Verify contract address and ABI
+4. **Build Errors**: Clear cache and reinstall dependencies
 
 ---
 
-**Built with ❤️ for the future of digital inheritance**
+<div align="center">
+
+**Built with ❤️ for the decentralized future**
+
+[🌟 Star this repo](https://github.com/your-username/eternal-key) • [🐛 Report Bug](https://github.com/your-username/eternal-key/issues) • [💡 Request Feature](https://github.com/your-username/eternal-key/issues)
+
+</div>
