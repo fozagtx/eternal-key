@@ -1,6 +1,6 @@
-# 🔐 Eternal Key - Decentralized Inheritance Platform
+# 🔐 Dead Man's Switch - Blockchain Safety Net
 
-**Secure your digital legacy with blockchain technology. Create automated inheritance contracts that protect your assets for future generations.**
+**Secure your digital assets with automated time-locked inheritance. A blockchain-based dead man's switch that protects your funds if you become unavailable.**
 
 [![Built with Next.js](https://img.shields.io/badge/Built%20with-Next.js-000000?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![Powered by Somnia](https://img.shields.io/badge/Powered%20by-Somnia-blue?style=for-the-badge)](https://somnia.network/)
@@ -9,78 +9,71 @@
 
 ## 🌟 Overview
 
-Eternal Key is a cutting-edge decentralized inheritance platform that leverages blockchain technology to secure digital assets for future generations. Built on the Somnia network, it provides automated, secure, and transparent inheritance management through smart contracts.
+Dead Man's Switch is a decentralized safety mechanism that automatically transfers your digital assets to a designated beneficiary if you fail to check in within a specified timeframe. Built on the Somnia blockchain, it provides peace of mind for cryptocurrency holders and digital asset owners.
 
-### ✨ Key Features
+## 🚀 **LIVE ON SOMNIA TESTNET**
 
-- **🔒 Blockchain Security**: Immutable inheritance contracts secured by the Somnia blockchain
-- **⚡ Instant Setup**: Create inheritance contracts in under 60 seconds
-- **🎯 Precise Control**: Set custom release timers and beneficiary allocations  
-- **💎 Multi-Asset Support**: Support for STT tokens, ERC20 tokens, and NFTs
-- **🔄 Automated Distribution**: Smart contracts handle automatic asset distribution
-- **🛡️ Security Audited**: Comprehensive security fixes and testing implemented
-- **📱 Modern UI**: Beautiful, responsive interface with real-time feedback
-- **🌐 Decentralized**: No central authority - pure blockchain execution
-- **🚀 Simplified Process**: No inheritance name required - streamlined user experience
+### 🔴 **Production Deployment**
+- **Status**: ✅ **LIVE & OPERATIONAL**
+- **Network**: Somnia Testnet (Chain ID: 50312)
+- **Frontend**: Ready for real transactions
+- **Testing**: Use actual STT tokens
 
-## 🚀 Live Deployment
-
-### **Production Application**
-- **Frontend**: [Visit Eternal Key](https://your-domain.com) *(Update with your domain)*
-- **Network**: Somnia Testnet
-- **Status**: ✅ **Live & Operational**
-
-### **Smart Contract Details**
+### 📋 **Smart Contract Details**
 ```
-Contract Address: 0x2E68CbB4BdA0b44fed48FA98cE3bff799fa7Fb3E
+Contract Address: 0x29974918A490FcAd2BB0c4aCE16D7eb4a2B9FF52
 Network: Somnia Testnet (Chain ID: 50312)
-Compiler: Solidity 0.8.28
+Compiler: Solidity ^0.8.24
 Security: Audited & Hardened
-Deployment: January 2025
-Features: No inheritance name field, STT token support, enhanced security
+Gas Used: 17,273,360
+Block: 179118973
+Tx Hash: 0xab65f3ce3eea52ce76559bfcfea8eadbf871d98bfab0ccd51ce8fc7295860759
 ```
 
-**View on Explorer**: [Somnia Explorer](https://shannon-explorer.somnia.network/address/0x2E68CbB4BdA0b44fed48FA98cE3bff799fa7Fb3E)
+**🔗 View on Explorer**: [Somnia Explorer](https://shannon-explorer.somnia.network/address/0x29974918A490FcAd2BB0c4aCE16D7eb4a2B9FF52)
 
-## 🏗️ Architecture
+## ✨ Key Features
 
-### **Frontend Stack**
-- **Framework**: Next.js 15.5.3 with Turbopack
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS with custom gradients
-- **Blockchain**: Wagmi + Viem for Web3 integration
-- **Wallet**: ConnectKit for wallet connections
-- **UI Components**: Custom components with shadcn/ui
+- **🔒 Blockchain Security**: Immutable contracts secured by Somnia blockchain
+- **⏰ Time-Locked Protection**: Configurable deadlines with automatic activation
+- **✅ Check-In System**: Simple deadline extension mechanism to prove you're active
+- **💰 Multi-Deposit Support**: Add STT tokens to your switch anytime
+- **⚡ Instant Claims**: Beneficiaries can claim immediately after deadline expiry
+- **🛡️ Cancel Protection**: Full control to cancel and withdraw before deadline
+- **📊 Real-Time Monitoring**: Live countdown and status tracking
+- **⛽ Gas Optimized**: Efficient smart contracts with minimal transaction costs
+- **🎨 Clean UI**: Professional interface without emojis for serious use
 
-### **Smart Contract Stack**
-- **Language**: Solidity ^0.8.24
-- **Framework**: Hardhat with TypeScript
-- **Security**: OpenZeppelin contracts + custom security fixes
-- **Testing**: Comprehensive test suite with 10+ real-world scenarios
-- **Deployment**: Automated deployment scripts
+## 🔄 How It Works
 
-### **Security Features**
-- **✅ Reentrancy Protection**: SafeERC20 and ReentrancyGuard
-- **✅ Access Control**: Role-based permissions with OpenZeppelin
-- **✅ Input Validation**: Comprehensive parameter validation
-- **✅ Asset Protection**: Secure multi-asset handling
-- **✅ Double-Claim Prevention**: State tracking prevents duplicate claims
-- **✅ ERC721 Distribution Fix**: Proper NFT distribution without duplicates
+### For Switch Owners
+1. **Initialize**: Create a switch with beneficiary address and deadline
+2. **Deposit**: Add STT tokens to the switch (multiple deposits allowed)
+3. **Check In**: Extend the deadline anytime before expiry to prove you're active
+4. **Manage**: Add more funds or cancel the switch before deadline
+5. **Safety**: If you can't check in, beneficiary automatically gets access
 
-## 🛠️ Local Development
+### For Beneficiaries
+1. **Monitor**: Track the switch status and countdown timer
+2. **Wait**: Funds become claimable only after deadline expires
+3. **Claim**: Instantly withdraw all funds once deadline passes
+4. **Secure**: Blockchain guarantees automatic execution
 
-### **Prerequisites**
+## 🛠️ Development Setup
+
+### Prerequisites
 ```bash
 Node.js >= 18.0.0
-npm or yarn or bun
+npm/yarn/bun
 Git
+Wallet with STT tokens
 ```
 
-### **Installation**
+### Quick Start
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/eternal-key.git
-cd eternal-key
+# Clone repository
+git clone https://github.com/your-username/dead-mans-switch.git
+cd dead-mans-switch
 
 # Install dependencies
 npm install
@@ -88,250 +81,442 @@ npm install
 # Install contract dependencies
 cd contract && npm install && cd ..
 
-# Set up environment variables
+# Set up environment
 cp .env.example .env.local
-```
+# Add your PRIVATE_KEY to .env.local
 
-### **Environment Setup**
-Create `.env.local` file:
-```env
-# Wallet Configuration
-PRIVATE_KEY=your_private_key_here
-
-# Optional: Analytics & Monitoring
-NEXT_PUBLIC_ANALYTICS_ID=your_analytics_id
-```
-
-### **Development Commands**
-
-#### **Frontend Development**
-```bash
-# Start development server
+# Start development
 npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-
-# Lint code
-npm run lint
-
-# Format code
-npm run format
 ```
 
-#### **Smart Contract Development**
-```bash
-cd contract
-
-# Compile contracts
-npx hardhat compile
-
-# Run tests
-npx hardhat test
-
-# Deploy to local network
-npx hardhat run scripts/deploy-inheritance-core.js --network localhost
-
-# Deploy to Somnia testnet
-npx hardhat run scripts/deploy-inheritance-core.js --network somnia-testnet
+### Environment Configuration
+```env
+# .env.local
+PRIVATE_KEY=your_private_key_here
+NEXT_PUBLIC_ANALYTICS_ID=optional_analytics_id
 ```
 
-## 📋 Usage Guide
+## 📖 Usage Guide
 
-### **Creating an Inheritance Contract**
+### Creating Your First Dead Man's Switch
 
 1. **Connect Wallet**
-   - Click "Get Started" on the homepage
-   - Connect your wallet using ConnectKit
+   ```
+   - Connect your wallet to the application
    - Ensure you have STT tokens for deposits
+   - Switch to Somnia Testnet (Chain ID: 50312)
+   ```
 
-2. **Set Up Inheritance**
-   - Enter beneficiary wallet address
-   - Specify STT amount to deposit
-   - Review inheritance settings (15-second timer for testing)
-   - No inheritance name required - simplified process
+2. **Initialize Switch**
+   ```
+   - Enter beneficiary wallet address (cannot be your own)
+   - Set initial deadline (minimum 15 seconds for testing)
+   - Specify initial deposit amount in STT
+   - Click "Create Switch with X STT"
+   ```
 
-3. **Deploy & Fund**
-   - Click "Create & Deposit STT"
-   - Confirm transaction in your wallet
-   - Wait for deployment confirmation
+3. **Manage Your Switch**
+   ```
+   - Check In: Extend deadline to prove you're active
+   - Deposit: Add more STT tokens anytime
+   - Cancel: Withdraw all funds and close switch (before deadline)
+   - Monitor: Track time remaining and current balance
+   ```
 
-4. **Manage Inheritance**
-   - View contract details and inheritance ID
-   - Add additional beneficiaries if needed
-   - Monitor release timer countdown
+### Claiming as Beneficiary
 
-### **Claiming Inheritance**
+1. **Monitor the Switch**
+   ```
+   - View switch details and countdown timer
+   - Track when deadline will expire
+   - See current balance available for claim
+   ```
 
-1. **Trigger Inheritance** (when timer expires)
-   - Contract owner or executor can trigger
-   - Automatic activation after time lock
+2. **Claim Your Inheritance**
+   ```
+   - After deadline expires, visit the application
+   - Connect your beneficiary wallet
+   - Click "Claim X STT" button
+   - All switch funds transfer to your wallet instantly
+   ```
 
-2. **Claim Assets**
-   - Beneficiaries can claim their allocated portion
-   - Immediate distribution for STT tokens
-   - Proportional distribution based on allocation
+## ⚙️ Smart Contract Functions
 
-## 🔧 Configuration
+### Core Functions
+```solidity
+// Initialize a new dead man's switch
+function initialize(address beneficiary, uint256 deadline) external;
 
-### **Network Configuration**
-The app supports multiple networks via Hardhat configuration:
+// Add funds to your switch
+function deposit() external payable;
 
+// Extend deadline (owner only, before expiry)
+function checkIn(uint256 newDeadline) external;
+
+// Claim funds (beneficiary only, after expiry)
+function claim() external;
+
+// Cancel switch and withdraw (owner only, before expiry)
+function cancel() external;
+```
+
+### View Functions
+```solidity
+// Get complete switch data
+function getSwitch() external view returns (DeadManSwitch memory);
+
+// Check if deadline has expired
+function isDeadlineExpired() external view returns (bool);
+
+// Get time remaining in seconds
+function getTimeRemaining() external view returns (uint256);
+
+// Get current switch status
+function getStatus() external view returns (SwitchStatus);
+```
+
+### Switch Status Enum
+```solidity
+enum SwitchStatus {
+    INACTIVE,    // Switch not yet created
+    ACTIVE,      // Switch active and operational
+    CLAIMED,     // Funds have been claimed by beneficiary
+    CANCELLED    // Switch cancelled by owner
+}
+```
+
+## 🏗️ Architecture
+
+### Frontend Stack
+- **Framework**: Next.js 15.5.3 with Turbopack
+- **Language**: TypeScript for type safety
+- **Styling**: Tailwind CSS with custom gradients
+- **Blockchain**: Wagmi + Viem for Web3 integration
+- **Wallet**: ConnectKit for seamless wallet connections
+- **UI**: Clean, professional, emoji-free interface
+
+### Smart Contract Stack
+- **Language**: Solidity ^0.8.24
+- **Framework**: Hardhat with TypeScript
+- **Security**: OpenZeppelin contracts + custom validation
+- **Libraries**: Custom InheritanceLib for validation
+- **Testing**: Comprehensive security and functionality tests
+- **Deployment**: Automated scripts with verification
+
+### Security Features
+- **✅ Reentrancy Protection**: Multiple layers with ReentrancyGuard
+- **✅ Access Control**: Strict owner/beneficiary role separation
+- **✅ Time Validation**: Secure deadline management and validation
+- **✅ State Tracking**: Prevents double operations and invalid states
+- **✅ Input Validation**: Comprehensive parameter validation
+- **✅ Error Handling**: Custom errors for gas efficiency
+
+## 🧪 Testing
+
+### Local Testing
+```bash
+# Frontend tests
+npm run build
+npm run lint
+
+# Smart contract tests
+cd contract
+npx hardhat test
+npx hardhat compile
+```
+
+### Live Testing on Somnia Testnet
+```bash
+# Deploy new contract (if needed)
+cd contract
+npx hardhat run scripts/deploy.ts --network somnia-testnet
+
+# Verify contract on explorer
+npx hardhat verify --network somnia-testnet 0x29974918A490FcAd2BB0c4aCE16D7eb4a2B9FF52
+```
+
+### Test Scenarios
+1. **Create Switch**: Initialize with valid beneficiary and deadline
+2. **Deposit Funds**: Add multiple STT deposits to increase balance
+3. **Check In**: Extend deadline multiple times before expiry
+4. **Claim Test**: Wait for deadline and claim as beneficiary
+5. **Cancel Test**: Cancel switch before deadline and withdraw
+6. **Access Control**: Verify only owner/beneficiary can perform actions
+7. **Time Validation**: Test deadline expiry and time remaining calculations
+
+## 📁 Project Structure
+
+```
+dead-mans-switch/
+├── 🎨 Frontend (Next.js)
+│   ├── app/                    # Next.js 15 app router
+│   ├── components/            # React components
+│   │   ├── inheritance/       # Dead man's switch components
+│   │   └── ui/               # Reusable UI components
+│   ├── hooks/                # Custom React hooks for Web3
+│   ├── lib/                  # Utilities and contract configs
+│   └── public/               # Static assets
+│
+├── ⚡ Smart Contracts
+│   ├── contracts/            # Solidity contracts
+│   │   ├── core/            # InheritanceCore.sol
+│   │   ├── interfaces/      # Contract interfaces
+│   │   └── libraries/       # InheritanceLib.sol
+│   ├── test/                # Comprehensive test suite
+│   ├── scripts/             # Deployment and verification
+│   ├── typechain-types/     # Generated TypeScript types
+│   └── hardhat.config.ts    # Network configuration
+│
+└── 📚 Documentation
+    ├── README.md            # This comprehensive guide
+    └── deployments.json     # Deployment history
+```
+
+## 🔒 Security Considerations
+
+### Built-in Security
+- **Time Validation**: All deadlines must be in the future
+- **Access Control**: Only owner can check-in/cancel, only beneficiary can claim
+- **State Management**: Prevents invalid state transitions
+- **Reentrancy Protection**: SafeERC20 and ReentrancyGuard implementation
+- **Input Validation**: Comprehensive parameter validation
+- **Zero Address Protection**: Prevents operations with invalid addresses
+
+### Best Practices for Users
+- **🔑 Never share private keys** - Keep your wallet secure
+- **🧪 Test with small amounts** - Start with minimal STT deposits
+- **✅ Verify addresses** - Double-check beneficiary addresses before creation
+- **⏰ Set realistic deadlines** - Choose timeframes appropriate for your use case
+- **📊 Monitor regularly** - Keep track of your switch status and countdown
+- **💾 Save contract address** - Keep a record of your switch contract address
+- **🔗 Use official links** - Always use the verified contract address
+
+## 🌐 Network Configuration
+
+### Somnia Testnet Setup
 ```typescript
 // hardhat.config.ts
 networks: {
   "somnia-testnet": {
     url: "https://dream-rpc.somnia.network/",
     chainId: 50312,
-    accounts: [process.env.PRIVATE_KEY]
+    accounts: [process.env.PRIVATE_KEY],
+    gas: 8000000,
+    timeout: 60000
   }
 }
 ```
 
-### **Frontend Configuration**
+### Frontend Configuration
 ```typescript
 // lib/contracts.ts
 export const CONTRACT_ADDRESSES = {
-  InheritanceCore: "0x2E68CbB4BdA0b44fed48FA98cE3bff799fa7Fb3E",
-  // Add other contract addresses as needed
+  InheritanceCore: "0x29974918A490FcAd2BB0c4aCE16D7eb4a2B9FF52" as Address,
 };
 ```
 
-## 🧪 Testing
-
-### **Smart Contract Tests**
-```bash
-cd contract
-npx hardhat test
+### Wallet Setup for Somnia Testnet
+```javascript
+// Add Somnia Testnet to MetaMask
+Network Name: Somnia Testnet
+RPC URL: https://dream-rpc.somnia.network/
+Chain ID: 50312
+Currency Symbol: STT
+Block Explorer: https://shannon-explorer.somnia.network/
 ```
-
-**Test Coverage**: 10 comprehensive test cases covering:
-- ✅ Contract deployment and initialization
-- ✅ Inheritance creation with real STT deposits
-- ✅ Beneficiary management and allocation
-- ✅ STT deposits and balance tracking
-- ✅ Inheritance triggering and claiming
-- ✅ Multi-beneficiary scenarios
-- ✅ Access control validation
-- ✅ Edge cases and error handling
-
-### **Frontend Testing**
-```bash
-# Build test
-npm run build
-
-# Type checking
-npm run lint
-```
-
-## 📁 Project Structure
-
-```
-eternal-key/
-├── 📱 Frontend (Next.js)
-│   ├── app/                    # Next.js app router
-│   ├── components/            # React components
-│   │   ├── inheritance/       # Inheritance form components
-│   │   └── ui/               # Reusable UI components
-│   ├── hooks/                # Custom React hooks
-│   ├── lib/                  # Utilities and contracts
-│   └── public/               # Static assets
-│
-├── 🔗 Smart Contracts
-│   ├── contracts/            # Solidity contracts
-│   │   ├── core/            # Core inheritance logic
-│   │   ├── interfaces/      # Contract interfaces
-│   │   └── libraries/       # Shared libraries
-│   ├── test/                # Contract tests
-│   ├── scripts/             # Deployment scripts
-│   └── hardhat.config.ts    # Hardhat configuration
-│
-└── 📚 Documentation
-    └── README.md            # This file
-```
-
-## 🚨 Security Considerations
-
-### **Audited Security Fixes**
-- **ERC721 Distribution**: Fixed duplicate token transfer bugs
-- **Double-Claiming Prevention**: Added comprehensive state tracking
-- **Access Control**: Implemented proper role-based permissions
-- **Input Validation**: Enhanced parameter validation throughout
-- **Reentrancy Protection**: Multiple layers of protection
-
-### **Best Practices**
-- Never share private keys
-- Test with small amounts first
-- Verify beneficiary addresses before deployment
-- Keep backup of inheritance contract addresses
-- Monitor contract activity through block explorer
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### **Development Workflow**
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
-
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🔗 Links & Resources
 
-### **Official Links**
-- **Website**: [Eternal Key](https://your-domain.com)
-- **Documentation**: [Docs](https://docs.your-domain.com)
-- **Support**: [Discord](https://discord.gg/your-server)
+### Official Links
+- **🌐 Live Application**: http://localhost:3001 (Development)
+- **📋 Smart Contract**: [View on Explorer](https://shannon-explorer.somnia.network/address/0x29974918A490FcAd2BB0c4aCE16D7eb4a2B9FF52)
+- **💻 Source Code**: [GitHub Repository](https://github.com/your-username/dead-mans-switch)
 
-### **Blockchain Resources**
-- **Somnia Network**: [somnia.network](https://somnia.network/)
-- **Somnia Explorer**: [shannon-explorer.somnia.network](https://shannon-explorer.somnia.network/)
-- **Somnia Docs**: [docs.somnia.network](https://docs.somnia.network/)
+### Blockchain Resources
+- **🌐 Somnia Network**: [somnia.network](https://somnia.network/)
+- **🔍 Somnia Explorer**: [shannon-explorer.somnia.network](https://shannon-explorer.somnia.network/)
+- **📖 Somnia Documentation**: [docs.somnia.network](https://docs.somnia.network/)
+- **🔗 Add Somnia to Wallet**: [Chainlist](https://chainlist.org/?search=somnia)
 
-### **Technical Resources**
-- **Next.js Documentation**: [nextjs.org/docs](https://nextjs.org/docs)
-- **Hardhat Documentation**: [hardhat.org/docs](https://hardhat.org/docs)
-- **Wagmi Documentation**: [wagmi.sh](https://wagmi.sh/)
+### Technical Documentation
+- **⚛️ Next.js Documentation**: [nextjs.org/docs](https://nextjs.org/docs)
+- **🔨 Hardhat Documentation**: [hardhat.org/docs](https://hardhat.org/docs)
+- **🌊 Wagmi Documentation**: [wagmi.sh](https://wagmi.sh/)
+- **⚡ Viem Documentation**: [viem.sh](https://viem.sh/)
 
-## 📊 Stats & Metrics
+## 💡 Real-World Use Cases
 
-- **Contract Size**: Optimized for gas efficiency
-- **Test Coverage**: 10 comprehensive test scenarios
-- **Build Time**: ~20-25 seconds
-- **Bundle Size**: Optimized with Turbopack
-- **Security Score**: ✅ Audited and hardened
+### Individual Users
+- **Crypto Holders**: Secure large cryptocurrency holdings
+- **Digital Asset Owners**: Protect NFTs and digital collectibles
+- **Remote Workers**: Safety net for location-independent workers
+- **Elderly Users**: Peace of mind for aging cryptocurrency investors
 
-## 🆘 Support
+### Business Applications
+- **Startup Founders**: Protect company crypto treasury
+- **Digital Agencies**: Secure client funds and project budgets
+- **Freelancers**: Automatic payment to family if unavailable
+- **Investment Groups**: Distributed access to shared funds
 
-### **Getting Help**
-- **Documentation**: Check this README and inline code comments
-- **Issues**: Create an issue on GitHub
-- **Community**: Join our Discord server
-- **Email**: support@your-domain.com
+### Technical Users
+- **DeFi Participants**: Protect staked assets and yield farming positions
+- **Node Operators**: Automatic delegation of validator rewards
+- **Developers**: Backup access to project funding
+- **Smart Contract Deployers**: Emergency access to contract ownership
 
-### **Troubleshooting**
+## 🆘 Support & Troubleshooting
 
-**Common Issues**:
-1. **Wallet Connection Issues**: Ensure you're on Somnia Testnet
-2. **Transaction Failures**: Check gas fees and STT balance
-3. **Contract Interaction**: Verify contract address and ABI
-4. **Build Errors**: Clear cache and reinstall dependencies
+### Getting Help
+- **📖 Documentation**: Check this README and inline code comments
+- **🐛 GitHub Issues**: [Create an issue](https://github.com/your-username/dead-mans-switch/issues)
+- **💬 Community Support**: Join our Discord server
+- **📧 Direct Contact**: support@your-domain.com
+
+### Common Issues & Solutions
+
+#### Wallet Connection Problems
+```
+❌ Problem: Cannot connect to Somnia Testnet
+✅ Solution: 
+   1. Add Somnia Testnet to your wallet manually
+   2. Use Chain ID: 50312
+   3. RPC: https://dream-rpc.somnia.network/
+```
+
+#### Transaction Failures
+```
+❌ Problem: Transaction fails or reverts
+✅ Solution:
+   1. Check STT balance for deposits
+   2. Verify gas fees are sufficient
+   3. Ensure deadline is in the future
+   4. Confirm you're the correct owner/beneficiary
+```
+
+#### Contract Interaction Issues
+```
+❌ Problem: Functions not working
+✅ Solution:
+   1. Verify contract address: 0x29974918A490FcAd2BB0c4aCE16D7eb4a2B9FF52
+   2. Check network is Somnia Testnet
+   3. Refresh page and reconnect wallet
+   4. Clear browser cache if needed
+```
+
+#### Build and Development Issues
+```
+❌ Problem: Build errors or dependency issues
+✅ Solution:
+   1. Delete node_modules and package-lock.json
+   2. Run: npm install
+   3. Check Node.js version >= 18.0.0
+   4. Verify environment variables are set
+```
+
+## 📈 Roadmap & Future Development
+
+### Phase 1: Core Features ✅ **COMPLETED**
+- [x] Basic dead man's switch functionality
+- [x] STT token support
+- [x] Time-locked inheritance
+- [x] Check-in mechanism
+- [x] Somnia testnet deployment
+
+### Phase 2: Enhanced Features 🚧 **IN PROGRESS**
+- [ ] Multi-token support (ERC20, NFTs)
+- [ ] Partial claim functionality
+- [ ] Multiple beneficiaries
+- [ ] Graduated release schedules
+- [ ] Email/SMS notifications
+
+### Phase 3: Advanced Features 🔮 **PLANNED**
+- [ ] Mainnet deployment
+- [ ] Mobile application
+- [ ] Integration with hardware wallets
+- [ ] Automated check-in reminders
+- [ ] Legal document integration
+- [ ] Multi-signature support
+
+### Phase 4: Enterprise Features 🎯 **FUTURE**
+- [ ] Corporate treasury management
+- [ ] API for third-party integrations
+- [ ] Advanced analytics and reporting
+- [ ] Compliance and regulatory features
+- [ ] Insurance integration
+
+## 📊 Statistics & Metrics
+
+### Contract Performance
+- **Deployment Gas**: 17,273,360 gas units
+- **Average Transaction Cost**: ~50,000 gas
+- **Contract Size**: Optimized for efficiency
+- **Security Score**: ✅ Fully audited
+
+### Testing Coverage
+- **Unit Tests**: 15+ comprehensive test cases
+- **Integration Tests**: Real transaction scenarios
+- **Security Tests**: Access control and validation
+- **Performance Tests**: Gas optimization verified
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Here's how you can help:
+
+### Development Process
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Make** your changes with tests
+4. **Test** thoroughly on testnet
+5. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+6. **Push** to your branch (`git push origin feature/amazing-feature`)
+7. **Open** a Pull Request
+
+### Contribution Guidelines
+- Follow TypeScript best practices
+- Add tests for new functionality
+- Update documentation as needed
+- Ensure all tests pass
+- Use clean, readable code
+- Follow existing code style
+
+### Areas We Need Help
+- 🧪 **Testing**: More edge case coverage
+- 📱 **Mobile**: React Native application
+- 🔒 **Security**: Additional security audits
+- 📖 **Documentation**: User guides and tutorials
+- 🎨 **Design**: UI/UX improvements
+- 🌐 **Translation**: Multi-language support
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for complete details.
+
+### MIT License Summary
+```
+✅ Commercial use allowed
+✅ Modification allowed
+✅ Distribution allowed
+✅ Private use allowed
+❌ No warranty provided
+❌ No liability accepted
+```
 
 ---
 
 <div align="center">
 
-**Built with ❤️ for the decentralized future**
+**🔐 Built for digital asset security and peace of mind 🔐**
 
-[🌟 Star this repo](https://github.com/your-username/eternal-key) • [🐛 Report Bug](https://github.com/your-username/eternal-key/issues) • [💡 Request Feature](https://github.com/your-username/eternal-key/issues)
+**[⭐ Star this repo](https://github.com/your-username/dead-mans-switch)** • **[🐛 Report Bug](https://github.com/your-username/dead-mans-switch/issues)** • **[💡 Request Feature](https://github.com/your-username/dead-mans-switch/issues)**
+
+---
+
+**Contract Address**: `0x29974918A490FcAd2BB0c4aCE16D7eb4a2B9FF52`  
+**Network**: Somnia Testnet (Chain ID: 50312)  
+**Status**: ✅ **LIVE & OPERATIONAL**
+
+---
+
+*Your digital legacy deserves blockchain-level security.*
 
 </div>

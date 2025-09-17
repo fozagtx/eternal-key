@@ -8,13 +8,11 @@ import { parseEther, formatEther, Address } from "viem";
 import {
   CONTRACT_ADDRESSES,
   INHERITANCE_CORE_ABI,
-  InheritanceData,
-  Beneficiary,
-  Asset,
-  TimeLock,
+  DeadManSwitch,
+  SwitchStatus,
 } from "@/lib/contracts";
 
-export function useInheritanceContract() {
+export function useDeadManSwitch() {
   const { address } = useAccount();
   const {
     writeContract,
@@ -24,181 +22,118 @@ export function useInheritanceContract() {
   } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash });
-
-  // Create a new inheritance vault
-  const createInheritance = async (
-    executor: Address,
-    requiresConfirmation: boolean,
-    timeLock: TimeLock,
-  ) => {
+  const initializeSwitch = async (beneficiary: Address, deadline: bigint) => {
     if (!address) throw new Error("Wallet not connected");
 
-    const args = [
-      executor,
-      requiresConfirmation,
-      {
-        distributionType: timeLock.distributionType,
-        unlockTime: timeLock.unlockTime,
-        vestingDuration: timeLock.vestingDuration,
-        cliffDuration: timeLock.cliffDuration,
-        milestoneTimestamps: timeLock.milestoneTimestamps,
-        milestonePercentages: timeLock.milestonePercentages,
-      },
-    ] as const;
-
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: "createInheritance",
-      args,
+      functionName: "initialize",
+      args: [beneficiary, deadline],
     });
   };
-
-  // Add beneficiary to inheritance
-  const addBeneficiary = async (
-    inheritanceId: bigint,
-    beneficiary: Address,
-    allocationBasisPoints: bigint,
-  ) => {
+  const deposit = async (amount: string) => {
+    if (!address) throw new Error("Wallet not connected");
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: "addBeneficiary",
-      args: [inheritanceId, beneficiary, allocationBasisPoints],
-    });
-  };
-
-  // Deposit STT to inheritance vault
-  const depositSTT = async (inheritanceId: bigint, amount: string) => {
-    return writeContract({
-      address: CONTRACT_ADDRESSES.InheritanceCore,
-      abi: INHERITANCE_CORE_ABI,
-      functionName: "depositSTT",
-      args: [inheritanceId],
+      functionName: "deposit",
       value: parseEther(amount),
     });
   };
+  const checkIn = async (newDeadline: bigint) => {
+    if (!address) throw new Error("Wallet not connected");
 
-  // Deposit ERC20 tokens
-  const depositERC20 = async (
-    inheritanceId: bigint,
-    tokenContract: Address,
-    amount: bigint,
-  ) => {
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: "depositERC20",
-      args: [inheritanceId, tokenContract, amount],
+      functionName: "checkIn",
+      args: [newDeadline],
+    });
+  };
+  const claim = async () => {
+    if (!address) throw new Error("Wallet not connected");
+
+    return writeContract({
+      address: CONTRACT_ADDRESSES.InheritanceCore,
+      abi: INHERITANCE_CORE_ABI,
+      functionName: "claim",
     });
   };
 
-  // Deposit ERC721 NFTs
-  const depositERC721 = async (
-    inheritanceId: bigint,
-    nftContract: Address,
-    tokenIds: bigint[],
-  ) => {
-    return writeContract({
-      address: CONTRACT_ADDRESSES.InheritanceCore,
-      abi: INHERITANCE_CORE_ABI,
-      functionName: "depositERC721",
-      args: [inheritanceId, nftContract, tokenIds],
-    });
-  };
+  const cancel = async () => {
+    if (!address) throw new Error("Wallet not connected");
 
-  // Trigger inheritance distribution
-  const triggerInheritance = async (inheritanceId: bigint) => {
     return writeContract({
       address: CONTRACT_ADDRESSES.InheritanceCore,
       abi: INHERITANCE_CORE_ABI,
-      functionName: "triggerInheritance",
-      args: [inheritanceId],
-    });
-  };
-
-  // Claim assets as beneficiary
-  const claimAssets = async (inheritanceId: bigint) => {
-    return writeContract({
-      address: CONTRACT_ADDRESSES.InheritanceCore,
-      abi: INHERITANCE_CORE_ABI,
-      functionName: "claimAssets",
-      args: [inheritanceId],
+      functionName: "cancel",
     });
   };
 
   return {
-    // Write functions
-    createInheritance,
-    addBeneficiary,
-    depositSTT,
-    depositERC20,
-    depositERC721,
-    triggerInheritance,
-    claimAssets,
-
-    // Transaction state
+    initializeSwitch,
+    deposit,
+    checkIn,
+    claim,
+    cancel,
     hash,
-    writeError,
-    isWritePending,
+    error: writeError,
+    isPending: isWritePending,
     isConfirming,
     isConfirmed,
   };
 }
 
-// Hook to read inheritance data
-export function useInheritanceData(inheritanceId: bigint) {
-  return useReadContract({
-    address: CONTRACT_ADDRESSES.InheritanceCore,
-    abi: INHERITANCE_CORE_ABI,
-    functionName: "getInheritanceData",
-    args: [inheritanceId],
-    query: {
-      enabled: !!inheritanceId,
-    },
-  }) as {
-    data: InheritanceData | undefined;
-    isError: boolean;
-    isLoading: boolean;
-    error: Error | null;
-    refetch: () => void;
-  };
-}
-
-// Hook to get beneficiary info
-export function useBeneficiaryInfo(
-  inheritanceId: bigint,
-  beneficiary: Address,
-) {
-  return useReadContract({
-    address: CONTRACT_ADDRESSES.InheritanceCore,
-    abi: INHERITANCE_CORE_ABI,
-    functionName: "getBeneficiaryInfo",
-    args: [inheritanceId, beneficiary],
-    query: {
-      enabled: !!inheritanceId && !!beneficiary,
-    },
-  }) as {
-    data: Beneficiary | undefined;
-    isError: boolean;
-    isLoading: boolean;
-    error: Error | null;
-    refetch: () => void;
-  };
-}
-
-// Hook to get claimable STT amount
-export function useClaimableSTT(inheritanceId: bigint, beneficiary?: Address) {
+export function useDeadManSwitchData() {
   const { address } = useAccount();
-  const targetAddress = beneficiary || address;
 
   return useReadContract({
     address: CONTRACT_ADDRESSES.InheritanceCore,
     abi: INHERITANCE_CORE_ABI,
-    functionName: "getClaimableSTT",
-    args: [inheritanceId, targetAddress!],
+    functionName: "getSwitch",
     query: {
-      enabled: !!inheritanceId && !!targetAddress,
+      enabled: !!address,
+    },
+  }) as {
+    data: DeadManSwitch | undefined;
+    isError: boolean;
+    isLoading: boolean;
+    error: Error | null;
+    refetch: () => void;
+  };
+}
+
+export function useIsDeadlineExpired() {
+  const { address } = useAccount();
+
+  return useReadContract({
+    address: CONTRACT_ADDRESSES.InheritanceCore,
+    abi: INHERITANCE_CORE_ABI,
+    functionName: "isDeadlineExpired",
+    query: {
+      enabled: !!address,
+      refetchInterval: 1000,
+    },
+  }) as {
+    data: boolean | undefined;
+    isError: boolean;
+    isLoading: boolean;
+    error: Error | null;
+    refetch: () => void;
+  };
+}
+
+export function useTimeRemaining() {
+  const { address } = useAccount();
+
+  return useReadContract({
+    address: CONTRACT_ADDRESSES.InheritanceCore,
+    abi: INHERITANCE_CORE_ABI,
+    functionName: "getTimeRemaining",
+    query: {
+      enabled: !!address,
+      refetchInterval: 1000,
     },
   }) as {
     data: bigint | undefined;
@@ -209,18 +144,18 @@ export function useClaimableSTT(inheritanceId: bigint, beneficiary?: Address) {
   };
 }
 
-// Hook to get all assets in inheritance
-export function useInheritanceAssets(inheritanceId: bigint) {
+export function useSwitchStatus() {
+  const { address } = useAccount();
+
   return useReadContract({
     address: CONTRACT_ADDRESSES.InheritanceCore,
     abi: INHERITANCE_CORE_ABI,
-    functionName: "getTotalAssets",
-    args: [inheritanceId],
+    functionName: "getStatus",
     query: {
-      enabled: !!inheritanceId,
+      enabled: !!address,
     },
   }) as {
-    data: Asset[] | undefined;
+    data: SwitchStatus | undefined;
     isError: boolean;
     isLoading: boolean;
     error: Error | null;
