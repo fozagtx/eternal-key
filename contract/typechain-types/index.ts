@@ -30,7 +30,7 @@ export type { ReentrancyGuard } from "./@openzeppelin/contracts/utils/Reentrancy
 export { ReentrancyGuard__factory } from "./factories/@openzeppelin/contracts/utils/ReentrancyGuard__factory";
 export type { InheritanceCore } from "./contracts/core/InheritanceCore";
 export { InheritanceCore__factory } from "./factories/contracts/core/InheritanceCore__factory";
-export type { IInheritanceCore } from "./contracts/interfaces/IInheritanceCore";
-export { IInheritanceCore__factory } from "./factories/contracts/interfaces/IInheritanceCore__factory";
+export type { IInheritanceCore } from "./contracts/interfaces/InheritanceCore.sol/IInheritanceCore";
+export { IInheritanceCore__factory } from "./factories/contracts/interfaces/InheritanceCore.sol/IInheritanceCore__factory";
 export type { InheritanceLib } from "./contracts/libraries/InheritanceLib";
 export { InheritanceLib__factory } from "./factories/contracts/libraries/InheritanceLib__factory";

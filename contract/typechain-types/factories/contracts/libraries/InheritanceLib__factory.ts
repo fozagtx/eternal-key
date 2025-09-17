@@ -18,17 +18,33 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "recipient",
-        type: "address",
+        internalType: "uint256",
+        name: "currentTime",
+        type: "uint256",
       },
       {
         internalType: "uint256",
-        name: "amount",
+        name: "deadline",
         type: "uint256",
       },
     ],
-    name: "AssetTransferFailed",
+    name: "DeadlineExpired",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "currentTime",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+    ],
+    name: "DeadlineNotExpired",
     type: "error",
   },
   {
@@ -50,60 +66,102 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "timestamp",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "percentage",
-        type: "uint256",
+        internalType: "address",
+        name: "beneficiary",
+        type: "address",
       },
     ],
-    name: "InvalidMilestone",
+    name: "InvalidBeneficiary",
     type: "error",
   },
   {
     inputs: [
       {
         internalType: "uint256",
-        name: "percentage",
+        name: "deadline",
         type: "uint256",
       },
     ],
-    name: "InvalidPercentage",
+    name: "InvalidDeadline",
     type: "error",
   },
   {
     inputs: [
       {
         internalType: "uint256",
-        name: "duration",
+        name: "extension",
         type: "uint256",
       },
     ],
-    name: "InvalidVestingDuration",
+    name: "InvalidDeadlineExtension",
     type: "error",
   },
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "timestampLength",
-        type: "uint256",
+        internalType: "address",
+        name: "caller",
+        type: "address",
       },
       {
-        internalType: "uint256",
-        name: "percentageLength",
-        type: "uint256",
+        internalType: "address",
+        name: "beneficiary",
+        type: "address",
       },
     ],
-    name: "MilestoneMismatch",
+    name: "OnlyBeneficiary",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "OnlyOwner",
     type: "error",
   },
   {
     inputs: [],
-    name: "BASIS_POINTS",
+    name: "SwitchAlreadyInitialized",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "SwitchNotInitialized",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "TransferFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ZeroAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "DEFAULT_DEADLINE_EXTENSION",
     outputs: [
       {
         internalType: "uint256",
@@ -116,7 +174,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "DEFAULT_CLIFF_DURATION",
+    name: "MAX_DEADLINE_EXTENSION",
     outputs: [
       {
         internalType: "uint256",
@@ -129,33 +187,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "DEFAULT_EXECUTION_DELAY",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "MAX_VESTING_DURATION",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "MIN_VESTING_DURATION",
+    name: "MIN_DEADLINE_EXTENSION",
     outputs: [
       {
         internalType: "uint256",
@@ -169,7 +201,7 @@ const _abi = [
 ] as const;
 
 const _bytecode =
-  "0x60d5610038600b82828239805160001a607314602b57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe7300000000000000000000000000000000000000003014608060405260043610605b5760003560e01c80631f1cbe8a1460605780633011071e14607b5780637cd0814b146084578063aaaaaea314608e578063e1f1c4a7146097575b600080fd5b606962278d0081565b60405190815260200160405180910390f35b60696201518081565b60696312cc030081565b606962093a8081565b60696127108156fea26469706673582212207fa722c29d32a8d244be2bb6ae4cfb9e6990fb31eeb44442d5833021e08c85bf64736f6c634300081c0033";
+  "0x60a56037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe730000000000000000000000000000000000000000301460806040526004361060475760003560e01c80632a9dc35614604c57806359f491c814604c578063972b63a4146065575b600080fd5b6053600f81565b60405190815260200160405180910390f35b60536301e133808156fea2646970667358221220fab18b8a038ed0dbd51aade27f0a0f6cf31667960d4f45ddd2702aa3a68cacfe64736f6c634300081c0033";
 
 type InheritanceLibConstructorParams =
   | [signer?: Signer]

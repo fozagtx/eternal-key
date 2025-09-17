@@ -21,7 +21,7 @@ import type {
   TypedLogDescription,
   TypedListener,
   TypedContractMethod,
-} from "../../common";
+} from "../../../common";
 
 export declare namespace IInheritanceCore {
   export type DeadManSwitchStruct = {
@@ -53,11 +53,9 @@ export declare namespace IInheritanceCore {
   };
 }
 
-export interface InheritanceCoreInterface extends Interface {
+export interface IInheritanceCoreInterface extends Interface {
   getFunction(
     nameOrSignature:
-      | "ADMIN_ROLE"
-      | "DEFAULT_ADMIN_ROLE"
       | "cancel"
       | "checkIn"
       | "claim"
@@ -67,17 +65,11 @@ export interface InheritanceCoreInterface extends Interface {
       | "getDeadline"
       | "getLastCheckIn"
       | "getOwner"
-      | "getRoleAdmin"
       | "getStatus"
       | "getSwitch"
       | "getTimeRemaining"
-      | "grantRole"
-      | "hasRole"
       | "initialize"
       | "isDeadlineExpired"
-      | "renounceRole"
-      | "revokeRole"
-      | "supportsInterface"
   ): FunctionFragment;
 
   getEvent(
@@ -85,21 +77,10 @@ export interface InheritanceCoreInterface extends Interface {
       | "CheckInPerformed"
       | "DepositMade"
       | "FundsClaimed"
-      | "RoleAdminChanged"
-      | "RoleGranted"
-      | "RoleRevoked"
       | "SwitchCancelled"
       | "SwitchInitialized"
   ): EventFragment;
 
-  encodeFunctionData(
-    functionFragment: "ADMIN_ROLE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "DEFAULT_ADMIN_ROLE",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "cancel", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "checkIn",
@@ -124,23 +105,11 @@ export interface InheritanceCoreInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "getOwner", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "getRoleAdmin",
-    values: [BytesLike]
-  ): string;
   encodeFunctionData(functionFragment: "getStatus", values?: undefined): string;
   encodeFunctionData(functionFragment: "getSwitch", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getTimeRemaining",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "grantRole",
-    values: [BytesLike, AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "hasRole",
-    values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
@@ -150,24 +119,7 @@ export interface InheritanceCoreInterface extends Interface {
     functionFragment: "isDeadlineExpired",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "renounceRole",
-    values: [BytesLike, AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "revokeRole",
-    values: [BytesLike, AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "supportsInterface",
-    values: [BytesLike]
-  ): string;
 
-  decodeFunctionResult(functionFragment: "ADMIN_ROLE", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "DEFAULT_ADMIN_ROLE",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "cancel", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "checkIn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "claim", data: BytesLike): Result;
@@ -186,30 +138,15 @@ export interface InheritanceCoreInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getOwner", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "getRoleAdmin",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "getStatus", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getSwitch", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getTimeRemaining",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isDeadlineExpired",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "renounceRole",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
 }
@@ -283,64 +220,6 @@ export namespace FundsClaimedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace RoleAdminChangedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    previousAdminRole: BytesLike,
-    newAdminRole: BytesLike
-  ];
-  export type OutputTuple = [
-    role: string,
-    previousAdminRole: string,
-    newAdminRole: string
-  ];
-  export interface OutputObject {
-    role: string;
-    previousAdminRole: string;
-    newAdminRole: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace RoleGrantedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    account: AddressLike,
-    sender: AddressLike
-  ];
-  export type OutputTuple = [role: string, account: string, sender: string];
-  export interface OutputObject {
-    role: string;
-    account: string;
-    sender: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace RoleRevokedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    account: AddressLike,
-    sender: AddressLike
-  ];
-  export type OutputTuple = [role: string, account: string, sender: string];
-  export interface OutputObject {
-    role: string;
-    account: string;
-    sender: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
 export namespace SwitchCancelledEvent {
   export type InputTuple = [
     owner: AddressLike,
@@ -388,11 +267,11 @@ export namespace SwitchInitializedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface InheritanceCore extends BaseContract {
-  connect(runner?: ContractRunner | null): InheritanceCore;
+export interface IInheritanceCore extends BaseContract {
+  connect(runner?: ContractRunner | null): IInheritanceCore;
   waitForDeployment(): Promise<this>;
 
-  interface: InheritanceCoreInterface;
+  interface: IInheritanceCoreInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -431,10 +310,6 @@ export interface InheritanceCore extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  ADMIN_ROLE: TypedContractMethod<[], [string], "view">;
-
-  DEFAULT_ADMIN_ROLE: TypedContractMethod<[], [string], "view">;
-
   cancel: TypedContractMethod<[], [void], "nonpayable">;
 
   checkIn: TypedContractMethod<
@@ -457,8 +332,6 @@ export interface InheritanceCore extends BaseContract {
 
   getOwner: TypedContractMethod<[], [string], "view">;
 
-  getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
-
   getStatus: TypedContractMethod<[], [bigint], "view">;
 
   getSwitch: TypedContractMethod<
@@ -469,18 +342,6 @@ export interface InheritanceCore extends BaseContract {
 
   getTimeRemaining: TypedContractMethod<[], [bigint], "view">;
 
-  grantRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
-  hasRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [boolean],
-    "view"
-  >;
-
   initialize: TypedContractMethod<
     [beneficiary: AddressLike, deadline: BigNumberish],
     [void],
@@ -489,34 +350,10 @@ export interface InheritanceCore extends BaseContract {
 
   isDeadlineExpired: TypedContractMethod<[], [boolean], "view">;
 
-  renounceRole: TypedContractMethod<
-    [role: BytesLike, callerConfirmation: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
-  revokeRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
-  supportsInterface: TypedContractMethod<
-    [interfaceId: BytesLike],
-    [boolean],
-    "view"
-  >;
-
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
-  getFunction(
-    nameOrSignature: "ADMIN_ROLE"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "DEFAULT_ADMIN_ROLE"
-  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "cancel"
   ): TypedContractMethod<[], [void], "nonpayable">;
@@ -545,9 +382,6 @@ export interface InheritanceCore extends BaseContract {
     nameOrSignature: "getOwner"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "getRoleAdmin"
-  ): TypedContractMethod<[role: BytesLike], [string], "view">;
-  getFunction(
     nameOrSignature: "getStatus"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
@@ -561,20 +395,6 @@ export interface InheritanceCore extends BaseContract {
     nameOrSignature: "getTimeRemaining"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "grantRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "hasRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [boolean],
-    "view"
-  >;
-  getFunction(
     nameOrSignature: "initialize"
   ): TypedContractMethod<
     [beneficiary: AddressLike, deadline: BigNumberish],
@@ -584,23 +404,6 @@ export interface InheritanceCore extends BaseContract {
   getFunction(
     nameOrSignature: "isDeadlineExpired"
   ): TypedContractMethod<[], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "renounceRole"
-  ): TypedContractMethod<
-    [role: BytesLike, callerConfirmation: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "revokeRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "supportsInterface"
-  ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
 
   getEvent(
     key: "CheckInPerformed"
@@ -622,27 +425,6 @@ export interface InheritanceCore extends BaseContract {
     FundsClaimedEvent.InputTuple,
     FundsClaimedEvent.OutputTuple,
     FundsClaimedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleAdminChanged"
-  ): TypedContractEvent<
-    RoleAdminChangedEvent.InputTuple,
-    RoleAdminChangedEvent.OutputTuple,
-    RoleAdminChangedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleGranted"
-  ): TypedContractEvent<
-    RoleGrantedEvent.InputTuple,
-    RoleGrantedEvent.OutputTuple,
-    RoleGrantedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleRevoked"
-  ): TypedContractEvent<
-    RoleRevokedEvent.InputTuple,
-    RoleRevokedEvent.OutputTuple,
-    RoleRevokedEvent.OutputObject
   >;
   getEvent(
     key: "SwitchCancelled"
@@ -691,39 +473,6 @@ export interface InheritanceCore extends BaseContract {
       FundsClaimedEvent.InputTuple,
       FundsClaimedEvent.OutputTuple,
       FundsClaimedEvent.OutputObject
-    >;
-
-    "RoleAdminChanged(bytes32,bytes32,bytes32)": TypedContractEvent<
-      RoleAdminChangedEvent.InputTuple,
-      RoleAdminChangedEvent.OutputTuple,
-      RoleAdminChangedEvent.OutputObject
-    >;
-    RoleAdminChanged: TypedContractEvent<
-      RoleAdminChangedEvent.InputTuple,
-      RoleAdminChangedEvent.OutputTuple,
-      RoleAdminChangedEvent.OutputObject
-    >;
-
-    "RoleGranted(bytes32,address,address)": TypedContractEvent<
-      RoleGrantedEvent.InputTuple,
-      RoleGrantedEvent.OutputTuple,
-      RoleGrantedEvent.OutputObject
-    >;
-    RoleGranted: TypedContractEvent<
-      RoleGrantedEvent.InputTuple,
-      RoleGrantedEvent.OutputTuple,
-      RoleGrantedEvent.OutputObject
-    >;
-
-    "RoleRevoked(bytes32,address,address)": TypedContractEvent<
-      RoleRevokedEvent.InputTuple,
-      RoleRevokedEvent.OutputTuple,
-      RoleRevokedEvent.OutputObject
-    >;
-    RoleRevoked: TypedContractEvent<
-      RoleRevokedEvent.InputTuple,
-      RoleRevokedEvent.OutputTuple,
-      RoleRevokedEvent.OutputObject
     >;
 
     "SwitchCancelled(address,uint256,uint256)": TypedContractEvent<

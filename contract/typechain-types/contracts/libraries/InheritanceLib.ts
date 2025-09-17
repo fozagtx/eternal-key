@@ -22,52 +22,34 @@ import type {
 export interface InheritanceLibInterface extends Interface {
   getFunction(
     nameOrSignature:
-      | "BASIS_POINTS"
-      | "DEFAULT_CLIFF_DURATION"
-      | "DEFAULT_EXECUTION_DELAY"
-      | "MAX_VESTING_DURATION"
-      | "MIN_VESTING_DURATION"
+      | "DEFAULT_DEADLINE_EXTENSION"
+      | "MAX_DEADLINE_EXTENSION"
+      | "MIN_DEADLINE_EXTENSION"
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "BASIS_POINTS",
+    functionFragment: "DEFAULT_DEADLINE_EXTENSION",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "DEFAULT_CLIFF_DURATION",
+    functionFragment: "MAX_DEADLINE_EXTENSION",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "DEFAULT_EXECUTION_DELAY",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "MAX_VESTING_DURATION",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "MIN_VESTING_DURATION",
+    functionFragment: "MIN_DEADLINE_EXTENSION",
     values?: undefined
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "BASIS_POINTS",
+    functionFragment: "DEFAULT_DEADLINE_EXTENSION",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "DEFAULT_CLIFF_DURATION",
+    functionFragment: "MAX_DEADLINE_EXTENSION",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "DEFAULT_EXECUTION_DELAY",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "MAX_VESTING_DURATION",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "MIN_VESTING_DURATION",
+    functionFragment: "MIN_DEADLINE_EXTENSION",
     data: BytesLike
   ): Result;
 }
@@ -115,34 +97,24 @@ export interface InheritanceLib extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  BASIS_POINTS: TypedContractMethod<[], [bigint], "view">;
+  DEFAULT_DEADLINE_EXTENSION: TypedContractMethod<[], [bigint], "view">;
 
-  DEFAULT_CLIFF_DURATION: TypedContractMethod<[], [bigint], "view">;
+  MAX_DEADLINE_EXTENSION: TypedContractMethod<[], [bigint], "view">;
 
-  DEFAULT_EXECUTION_DELAY: TypedContractMethod<[], [bigint], "view">;
-
-  MAX_VESTING_DURATION: TypedContractMethod<[], [bigint], "view">;
-
-  MIN_VESTING_DURATION: TypedContractMethod<[], [bigint], "view">;
+  MIN_DEADLINE_EXTENSION: TypedContractMethod<[], [bigint], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
   getFunction(
-    nameOrSignature: "BASIS_POINTS"
+    nameOrSignature: "DEFAULT_DEADLINE_EXTENSION"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "DEFAULT_CLIFF_DURATION"
+    nameOrSignature: "MAX_DEADLINE_EXTENSION"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "DEFAULT_EXECUTION_DELAY"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "MAX_VESTING_DURATION"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "MIN_VESTING_DURATION"
+    nameOrSignature: "MIN_DEADLINE_EXTENSION"
   ): TypedContractMethod<[], [bigint], "view">;
 
   filters: {};
