@@ -2,7 +2,7 @@
 
 import { useAccount } from "wagmi";
 import { ConnectKitButton } from "connectkit";
-import { InheritanceForm } from "@/components/inheritance/InheritanceForm";
+import { InheritanceDashboard } from "@/components/inheritance/InheritanceForm";
 
 export function Dashboard() {
   const { address, isConnected } = useAccount();
@@ -41,22 +41,12 @@ export function Dashboard() {
             </p>
           </div>
 
-          {/* Wallet Info */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
-            <div className="flex flex-col items-start sm:items-end">
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                Connected Wallet
-              </p>
-              <p className="font-mono text-xs sm:text-sm font-medium">
-                {formatAddress(address)}
-              </p>
-            </div>
+          {/* Wallet Connection */}
+          <div className="flex items-center">
             <ConnectKitButton />
           </div>
         </div>
-
-        {/* Main Content - Enhanced Inheritance Form */}
-        <InheritanceForm />
+        <InheritanceDashboard />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { Address } from "viem";
 
 export const CONTRACT_ADDRESSES = {
-  InheritanceCore: "0x29974918A490FcAd2BB0c4aCE16D7eb4a2B9FF52" as Address,
+  InheritanceCore: "0x1ED0dC9B80B9396b3D82BC2723f2539a83b96789" as Address,
 };
 
 export const INHERITANCE_CORE_ABI = [
@@ -145,7 +145,7 @@ export const INHERITANCE_CORE_ABI = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
+        type: "address",
       },
     ],
     stateMutability: "view",

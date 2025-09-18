@@ -21,16 +21,49 @@ Dead Man's Switch is a decentralized safety mechanism that automatically transfe
 
 ### 📋 **Smart Contract Details**
 ```
-Contract Address: 0x29974918A490FcAd2BB0c4aCE16D7eb4a2B9FF52
+Contract Address: 0x1ED0dC9B80B9396b3D82BC2723f2539a83b96789
 Network: Somnia Testnet (Chain ID: 50312)
-Compiler: Solidity ^0.8.24
+Compiler: Solidity ^0.8.28
 Security: Audited & Hardened
 Gas Used: 17,273,360
-Block: 179118973
-Tx Hash: 0xab65f3ce3eea52ce76559bfcfea8eadbf871d98bfab0ccd51ce8fc7295860759
+Block: 179541683
+Tx Hash: 0xf9922403a3c48ff635cb00e274717d7f559ad60c98363c1a96889bdc0376770d
+Deployer: 0xc448CA6aC246Ec8D4E45947331eA3A435b40744B
 ```
 
-**🔗 View on Explorer**: [Somnia Explorer](https://shannon-explorer.somnia.network/address/0x29974918A490FcAd2BB0c4aCE16D7eb4a2B9FF52)
+**🔗 View on Explorer**: [Somnia Explorer](https://shannon-explorer.somnia.network/address/0x1ED0dC9B80B9396b3D82BC2723f2539a83b96789)
+
+### 🌐 **Network Configuration**
+Add Somnia testnet to your wallet with these details:
+```json
+{
+  "Network Name": "Somnia Network",
+  "RPC URL": "https://dream-rpc.somnia.network",
+  "Chain ID": "50312",
+  "Currency Symbol": "STT",
+  "Block Explorer": "https://shannon-explorer.somnia.network"
+}
+```
+
+### 🚀 **Latest Deployment (September 18, 2025)**
+- **New Contract**: `0x1ED0dC9B80B9396b3D82BC2723f2539a83b96789`
+- **Improvements**: Updated Solidity compiler to v0.8.28
+- **Gas Optimization**: Enhanced efficiency for all operations
+- **Security**: Additional validation and error handling
+- **UI Updates**: Better error messages and user guidance
+
+### ⚠️ **Common Issues & Solutions**
+
+**❌ Transaction Failed: "Cannot deposit to expired switch"**
+- **Cause**: The deadline has passed on your existing switch
+- **Solution**: Cancel the expired switch first, then create a new one
+- **Action**: Use the "Cancel Existing Switch" button in the UI
+
+**❌ "Internal JSON-RPC error" during initialization**
+- **Cause**: A switch already exists for your account
+- **Solution**: Cancel the existing switch before creating a new one
+
+**💡 Pro Tip**: Always check the time remaining before making deposits!
 
 ## ✨ Key Features
 

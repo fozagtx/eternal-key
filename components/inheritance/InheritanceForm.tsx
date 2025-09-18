@@ -13,7 +13,7 @@ import {
 } from "@/hooks/useInheritanceContract";
 import { SwitchStatus } from "@/lib/contracts";
 
-export function InheritanceForm() {
+export function InheritanceDashboard() {
   const { address } = useAccount();
   const {
     initializeSwitch,
@@ -25,51 +25,69 @@ export function InheritanceForm() {
     isPending,
     error,
   } = useDeadManSwitch();
-  const { data: receipt, isSuccess } = useWaitForTransactionReceipt({ hash });
 
+  const { data: receipt, isSuccess } = useWaitForTransactionReceipt({ hash });
   const { data: switchData, refetch: refetchSwitch } = useDeadManSwitchData();
   const { data: isExpired } = useIsDeadlineExpired();
   const { data: timeRemaining } = useTimeRemaining();
   const { data: status } = useSwitchStatus();
 
-  const [step, setStep] = useState<"setup" | "deposit" | "manage">("setup");
+  const [step, setStep] = useState<"setup" | "manage">("setup");
   const [formData, setFormData] = useState({
     beneficiaryAddress: "",
     depositAmount: "0.01",
-    deadlineHours: "0.0042", // 15 seconds in hours (15/3600)
+    deadlineHours: "24", // 24 hours default
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Check if a switch already exists
+  const hasSwitchAlready = Boolean(
+    switchData?.owner &&
+      switchData.owner !== "0x0000000000000000000000000000000000000000",
+  );
+
+  // Check if the switch is expired
+  const isSwitchExpired = Boolean(isExpired && hasSwitchAlready);
+
   useEffect(() => {
-    if (
-      switchData?.owner &&
-      switchData.owner !== "0x0000000000000000000000000000000000000000"
-    ) {
+    if (hasSwitchAlready) {
       setStep("manage");
     }
-  }, [switchData]);
+  }, [hasSwitchAlready]);
+
+  // Force refresh switch data on mount
+  useEffect(() => {
+    if (address) {
+      refetchSwitch();
+    }
+  }, [address, refetchSwitch]);
 
   useEffect(() => {
     if (isSuccess && receipt) {
       refetchSwitch();
-      if (step === "setup") {
-        setStep("deposit");
-      }
     }
-  }, [isSuccess, receipt, step, refetchSwitch]);
+  }, [isSuccess, receipt, refetchSwitch]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.beneficiaryAddress.trim()) {
-      newErrors.beneficiaryAddress = "Beneficiary address required";
+    if (!formData.beneficiaryAddress) {
+      newErrors.beneficiaryAddress = "Beneficiary address is required";
+    } else if (!/^0x[a-fA-F0-9]{40}$/.test(formData.beneficiaryAddress)) {
+      newErrors.beneficiaryAddress = "Invalid Ethereum address";
+    } else if (
+      formData.beneficiaryAddress.toLowerCase() === address?.toLowerCase()
+    ) {
+      newErrors.beneficiaryAddress = "Beneficiary cannot be the same as owner";
     }
+
     if (!formData.depositAmount || parseFloat(formData.depositAmount) <= 0) {
-      newErrors.depositAmount = "Deposit amount must be > 0";
+      newErrors.depositAmount = "Deposit amount must be greater than 0";
     }
+
     if (!formData.deadlineHours || parseFloat(formData.deadlineHours) <= 0) {
-      newErrors.deadlineHours = "Deadline must be > 0 hours";
+      newErrors.deadlineHours = "Deadline must be greater than 0 hours";
     }
 
     setErrors(newErrors);
@@ -80,26 +98,59 @@ export function InheritanceForm() {
     e.preventDefault();
     if (!validateForm()) return;
 
+    // Double-check if switch already exists
+    await refetchSwitch();
+    if (hasSwitchAlready) {
+      setErrors({
+        general:
+          "A switch already exists for your account. Please cancel it first.",
+      });
+      setStep("manage");
+      return;
+    }
+
     try {
       const deadlineTimestamp = BigInt(
         Math.floor(Date.now() / 1000) +
-          parseFloat(formData.deadlineHours) * 3600,
+          Math.floor(parseFloat(formData.deadlineHours) * 3600),
       );
 
       await initializeSwitch(
         formData.beneficiaryAddress as Address,
         deadlineTimestamp,
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to initialize switch:", error);
+
+      // Check for specific switch already exists error
+      if (
+        error?.message?.includes("SwitchAlreadyInitialized") ||
+        error?.message?.includes("Internal JSON-RPC error")
+      ) {
+        setErrors({
+          general:
+            "A switch already exists. Please refresh the page or cancel the existing switch.",
+        });
+        setStep("manage");
+        await refetchSwitch();
+      } else {
+        setErrors({ general: "Failed to create switch. Please try again." });
+      }
     }
   };
 
   const handleDeposit = async () => {
+    if (isSwitchExpired) {
+      alert(
+        "Cannot deposit to expired switch. Please cancel and create a new one.",
+      );
+      return;
+    }
     try {
       await deposit(formData.depositAmount);
     } catch (error) {
-      console.error("Failed to deposit:", error);
+      console.error("Deposit failed:", error);
+      alert("Deposit failed. The switch may be expired or invalid.");
     }
   };
 
@@ -107,7 +158,7 @@ export function InheritanceForm() {
     try {
       const newDeadline = BigInt(
         Math.floor(Date.now() / 1000) +
-          parseFloat(formData.deadlineHours) * 3600,
+          Math.floor(parseFloat(formData.deadlineHours) * 3600),
       );
       await checkIn(newDeadline);
     } catch (error) {
@@ -126,6 +177,7 @@ export function InheritanceForm() {
   const handleCancel = async () => {
     try {
       await cancel();
+      setStep("setup"); // Go back to setup after canceling
     } catch (error) {
       console.error("Failed to cancel:", error);
     }
@@ -143,126 +195,87 @@ export function InheritanceForm() {
     return parseFloat((Number(balance) / 1e18).toFixed(6));
   };
 
+  // Management view for existing switches
   if (step === "manage" && switchData) {
     const isOwner = address === switchData.owner;
     const isBeneficiary = address === switchData.beneficiary;
 
     return (
-      <div className="max-w-2xl mx-auto px-4">
-        <div className="relative bg-gradient-to-br from-white/90 via-white/80 to-white/70 dark:from-gray-900/90 dark:via-gray-800/80 dark:to-gray-900/70 border border-blue-200/50 dark:border-blue-800/50 rounded-3xl p-8 sm:p-10 shadow-2xl backdrop-blur-xl overflow-hidden">
-          <div className="relative text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/25 mb-6">
-              <span className="text-white text-2xl font-bold">DMS</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-3">
-              Dead Man's Switch
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 shadow-2xl">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Dead Man's Switch Dashboard
             </h2>
-            <p className="text-muted-foreground text-base max-w-md mx-auto">
-              {isOwner
-                ? "Manage your dead man's switch"
-                : "Beneficiary dashboard"}
+            <p className="text-gray-600 dark:text-gray-400">
+              {isOwner ? "Manage your switch" : "Beneficiary view"}
             </p>
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-gradient-to-r from-blue-50/80 via-blue-50/60 to-cyan-50/80 dark:from-blue-900/20 dark:via-blue-800/20 dark:to-cyan-900/20 border border-blue-200/50 dark:border-blue-800/50 rounded-2xl p-6">
-              <h3 className="font-bold text-lg text-blue-800 dark:text-blue-200 mb-4">
-                Switch Status
+          {/* Status Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
+              <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">
+                Status
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <div className="p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl">
-                  <span className="text-blue-600 dark:text-blue-400 font-medium block">
-                    Status:
-                  </span>
-                  <span className="font-bold text-blue-800 dark:text-blue-200">
-                    {status === SwitchStatus.ACTIVE
-                      ? "Active"
-                      : status === SwitchStatus.CLAIMED
-                        ? "Claimed"
-                        : status === SwitchStatus.CANCELLED
-                          ? "Cancelled"
-                          : "Inactive"}
-                  </span>
-                </div>
-                <div className="p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl">
-                  <span className="text-blue-600 dark:text-blue-400 font-medium block">
-                    Balance:
-                  </span>
-                  <span className="font-bold text-blue-800 dark:text-blue-200">
-                    {formatBalance(switchData.balance)} STT
-                  </span>
-                </div>
-                <div className="p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl">
-                  <span className="text-blue-600 dark:text-blue-400 font-medium block">
-                    Time Left:
-                  </span>
-                  <span className="font-bold text-blue-800 dark:text-blue-200">
-                    {timeRemaining
-                      ? formatTimeRemaining(timeRemaining)
-                      : "Expired"}
-                  </span>
-                </div>
-              </div>
+              <p className="text-blue-900 dark:text-blue-100 font-bold">
+                {status === SwitchStatus.ACTIVE
+                  ? "Active"
+                  : status === SwitchStatus.CLAIMED
+                    ? "Claimed"
+                    : status === SwitchStatus.CANCELLED
+                      ? "Cancelled"
+                      : "Inactive"}
+              </p>
             </div>
 
-            <div className="bg-gradient-to-r from-purple-50/80 via-purple-50/60 to-violet-50/80 dark:from-purple-900/20 dark:via-purple-800/20 dark:to-violet-900/20 border border-purple-200/50 dark:border-purple-800/50 rounded-2xl p-6">
-              <h3 className="font-bold text-lg text-purple-800 dark:text-purple-200 mb-4">
-                Details
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4">
+              <h3 className="font-semibold text-green-800 dark:text-green-200 mb-2">
+                Balance
               </h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl">
-                  <span className="text-purple-600 dark:text-purple-400 font-medium">
-                    Owner:
-                  </span>
-                  <span className="font-mono text-purple-800 dark:text-purple-200 text-xs">
-                    {switchData.owner.slice(0, 8)}...
-                    {switchData.owner.slice(-6)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl">
-                  <span className="text-purple-600 dark:text-purple-400 font-medium">
-                    Beneficiary:
-                  </span>
-                  <span className="font-mono text-purple-800 dark:text-purple-200 text-xs">
-                    {switchData.beneficiary.slice(0, 8)}...
-                    {switchData.beneficiary.slice(-6)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl">
-                  <span className="text-purple-600 dark:text-purple-400 font-medium">
-                    Deadline Expired:
-                  </span>
-                  <span className="font-bold text-purple-800 dark:text-purple-200">
-                    {isExpired ? "Yes" : "No"}
-                  </span>
-                </div>
-              </div>
+              <p className="text-green-900 dark:text-green-100 font-bold">
+                {formatBalance(switchData.balance)} STT
+              </p>
             </div>
 
-            {isOwner && status === SwitchStatus.ACTIVE && !isExpired && (
-              <div className="space-y-4">
-                <div className="space-y-3">
-                  <label className="text-base font-semibold text-foreground">
-                    Extend Deadline (Hours)
-                  </label>
-                  <input
-                    type="number"
-                    step="1"
-                    min="1"
-                    value={formData.deadlineHours}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        deadlineHours: e.target.value,
-                      }))
-                    }
-                    className="w-full border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 rounded-2xl px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-base"
-                    placeholder="24"
-                  />
-                </div>
+            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4">
+              <h3 className="font-semibold text-purple-800 dark:text-purple-200 mb-2">
+                Time Left
+              </h3>
+              <p className="text-purple-900 dark:text-purple-100 font-bold">
+                {timeRemaining ? formatTimeRemaining(timeRemaining) : "Expired"}
+              </p>
+            </div>
+          </div>
 
-                <div className="space-y-3">
-                  <label className="text-base font-semibold text-foreground">
+          {/* Expired Switch Warning */}
+          {isOwner && isSwitchExpired && (
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-700 mb-6">
+              <h3 className="font-bold text-red-800 dark:text-red-200 mb-2">
+                ⚠️ Switch Expired!
+              </h3>
+              <p className="text-sm text-red-700 dark:text-red-300 mb-3">
+                Your switch deadline has passed. You cannot deposit or check-in
+                to an expired switch. Cancel it to recover any remaining funds,
+                then create a new one.
+              </p>
+              <Button
+                onClick={handleCancel}
+                disabled={isPending}
+                variant="destructive"
+                size="sm"
+              >
+                {isPending ? "Canceling..." : "Cancel Expired Switch"}
+              </Button>
+            </div>
+          )}
+
+          {/* Owner Controls */}
+          {isOwner && status === SwitchStatus.ACTIVE && !isSwitchExpired && (
+            <div className="space-y-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
                     Additional Deposit (STT)
                   </label>
                   <input
@@ -276,124 +289,101 @@ export function InheritanceForm() {
                         depositAmount: e.target.value,
                       }))
                     }
-                    className="w-full border-2 border-gray-200 dark:border-gray-700 focus:border-green-500 dark:focus:border-green-400 rounded-2xl px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-base"
+                    className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     placeholder="0.01"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Button
-                    onClick={handleCheckIn}
-                    disabled={isPending}
-                    className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 rounded-xl"
-                  >
-                    {isPending ? "Processing..." : "Check In"}
-                  </Button>
-                  <Button
-                    onClick={handleDeposit}
-                    disabled={isPending}
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-3 rounded-xl"
-                  >
-                    {isPending ? "Processing..." : "Deposit"}
-                  </Button>
-                  <Button
-                    onClick={handleCancel}
-                    disabled={isPending}
-                    variant="destructive"
-                    className="font-bold py-3 rounded-xl"
-                  >
-                    {isPending ? "Processing..." : "Cancel Switch"}
-                  </Button>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Extend Deadline (Hours)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.deadlineHours}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        deadlineHours: e.target.value,
+                      }))
+                    }
+                    className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    placeholder="24"
+                  />
                 </div>
               </div>
-            )}
 
-            {isBeneficiary && isExpired && status === SwitchStatus.ACTIVE && (
-              <Button
-                onClick={handleClaim}
-                disabled={isPending}
-                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-6 text-lg rounded-2xl"
-              >
-                {isPending
-                  ? "Claiming..."
-                  : `Claim ${formatBalance(switchData.balance)} STT`}
-              </Button>
-            )}
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  onClick={handleDeposit}
+                  disabled={isPending}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {isPending ? "Depositing..." : "Deposit STT"}
+                </Button>
+                <Button
+                  onClick={handleCheckIn}
+                  disabled={isPending}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {isPending ? "Checking In..." : "Check In"}
+                </Button>
+                <Button
+                  onClick={handleCancel}
+                  disabled={isPending}
+                  variant="destructive"
+                >
+                  {isPending ? "Canceling..." : "Cancel Switch"}
+                </Button>
+              </div>
+            </div>
+          )}
 
-            {error && (
-              <div className="bg-gradient-to-r from-red-50/80 to-red-50/80 dark:from-red-900/20 dark:to-red-900/20 border border-red-200/50 dark:border-red-800/50 rounded-2xl p-6">
-                <p className="text-red-800 dark:text-red-200 font-bold">
-                  Error
-                </p>
-                <p className="text-red-700 dark:text-red-300 text-sm">
-                  {error.message}
-                </p>
+          {/* Beneficiary Claim */}
+          {isBeneficiary &&
+            isSwitchExpired &&
+            status === SwitchStatus.ACTIVE && (
+              <div className="mb-6">
+                <Button
+                  onClick={handleClaim}
+                  disabled={isPending}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg"
+                >
+                  {isPending
+                    ? "Claiming..."
+                    : `Claim ${formatBalance(switchData.balance)} STT`}
+                </Button>
               </div>
             )}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
-  if (step === "deposit") {
-    return (
-      <div className="max-w-2xl mx-auto px-4">
-        <div className="relative bg-gradient-to-br from-white/90 via-white/80 to-white/70 dark:from-gray-900/90 dark:via-gray-800/80 dark:to-gray-900/70 border border-green-200/50 dark:border-green-800/50 rounded-3xl p-8 sm:p-10 shadow-2xl backdrop-blur-xl overflow-hidden">
-          <div className="relative text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-lg shadow-green-500/25 mb-6">
-              <span className="text-white text-2xl font-bold">$</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-3">
-              Deposit Funds
-            </h2>
-            <p className="text-muted-foreground text-base max-w-md mx-auto">
-              Add STT tokens to your dead man's switch
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <label className="text-base font-semibold text-foreground">
-                Deposit Amount (STT)
-              </label>
-              <input
-                type="number"
-                step="0.001"
-                min="0.001"
-                value={formData.depositAmount}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    depositAmount: e.target.value,
-                  }))
-                }
-                className="w-full border-2 border-gray-200 dark:border-gray-700 focus:border-green-500 dark:focus:border-green-400 rounded-2xl px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-base"
-                placeholder="0.01"
-              />
-            </div>
-
-            <Button
-              onClick={handleDeposit}
-              disabled={isPending}
-              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-6 text-lg rounded-2xl"
-            >
-              {isPending
-                ? "Depositing..."
-                : `Deposit ${formData.depositAmount} STT`}
-            </Button>
-
-            {error && (
-              <div className="bg-gradient-to-r from-red-50/80 to-red-50/80 dark:from-red-900/20 dark:to-red-900/20 border border-red-200/50 dark:border-red-800/50 rounded-2xl p-6">
-                <p className="text-red-800 dark:text-red-200 font-bold">
-                  Error
-                </p>
-                <p className="text-red-700 dark:text-red-300 text-sm">
-                  {error.message}
+          {/* Details */}
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <h3 className="font-semibold mb-3">Switch Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <div>
+                <span className="text-gray-600 dark:text-gray-400">Owner:</span>
+                <p className="font-mono text-xs break-all">
+                  {switchData.owner}
                 </p>
               </div>
-            )}
+              <div>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Beneficiary:
+                </span>
+                <p className="font-mono text-xs break-all">
+                  {switchData.beneficiary}
+                </p>
+              </div>
+            </div>
           </div>
+
+          {error && (
+            <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              <p className="text-red-800 dark:text-red-200 text-sm">
+                {error.message}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -401,24 +391,33 @@ export function InheritanceForm() {
 
   return (
     <div className="max-w-2xl mx-auto px-4">
-      <div className="relative bg-gradient-to-br from-white/90 via-white/80 to-white/70 dark:from-gray-900/90 dark:via-gray-800/80 dark:to-gray-900/70 border border-blue-200/50 dark:border-blue-800/50 rounded-3xl p-8 sm:p-10 shadow-2xl backdrop-blur-xl overflow-hidden">
-        <div className="relative text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/25 mb-6">
-            <span className="text-white text-2xl font-bold">DMS</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-3">
+      <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 shadow-2xl">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Create Dead Man's Switch
           </h2>
-          <p className="text-muted-foreground text-base max-w-md mx-auto leading-relaxed">
-            Set up an automated inheritance system that activates after a
-            specified time period
+          <p className="text-gray-600 dark:text-gray-400">
+            Set up automated inheritance for your STT tokens
           </p>
+
+          {/* Refresh button for detecting existing switches */}
+          <div className="mt-4">
+            <Button
+              type="button"
+              onClick={() => refetchSwitch()}
+              disabled={isPending}
+              variant="outline"
+              size="sm"
+            >
+              🔄 Check for Existing Switch
+            </Button>
+          </div>
         </div>
 
-        <form onSubmit={handleInitialize} className="relative space-y-8">
-          <div className="space-y-3">
-            <label className="flex items-center gap-3 text-base font-semibold text-foreground">
-              Beneficiary Address
+        <form onSubmit={handleInitialize} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Beneficiary Address *
             </label>
             <input
               type="text"
@@ -429,19 +428,19 @@ export function InheritanceForm() {
                   beneficiaryAddress: e.target.value,
                 }))
               }
-              className="w-full border-2 border-gray-200 dark:border-gray-700 focus:border-purple-500 dark:focus:border-purple-400 rounded-2xl px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-sm font-mono"
+              className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-mono text-sm"
               placeholder="0x1234567890abcdef1234567890abcdef12345678"
             />
             {errors.beneficiaryAddress && (
-              <p className="text-red-600 dark:text-red-400 text-sm">
+              <p className="text-red-600 text-sm mt-1">
                 {errors.beneficiaryAddress}
               </p>
             )}
           </div>
 
-          <div className="space-y-3">
-            <label className="text-base font-semibold text-foreground">
-              Initial Deposit (STT)
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Initial Deposit (STT) *
             </label>
             <input
               type="number"
@@ -454,24 +453,22 @@ export function InheritanceForm() {
                   depositAmount: e.target.value,
                 }))
               }
-              className="w-full border-2 border-gray-200 dark:border-gray-700 focus:border-green-500 dark:focus:border-green-400 rounded-2xl px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-base"
+              className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               placeholder="0.01"
             />
             {errors.depositAmount && (
-              <p className="text-red-600 dark:text-red-400 text-sm">
+              <p className="text-red-600 text-sm mt-1">
                 {errors.depositAmount}
               </p>
             )}
           </div>
 
-          <div className="space-y-3">
-            <label className="text-base font-semibold text-foreground">
-              Deadline (Hours from now)
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Deadline (Hours from now) *
             </label>
             <input
               type="number"
-              step="1"
-              min="1"
               value={formData.deadlineHours}
               onChange={(e) =>
                 setFormData((prev) => ({
@@ -479,42 +476,43 @@ export function InheritanceForm() {
                   deadlineHours: e.target.value,
                 }))
               }
-              className="w-full border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 rounded-2xl px-6 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-base"
+              className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               placeholder="24"
             />
             {errors.deadlineHours && (
-              <p className="text-red-600 dark:text-red-400 text-sm">
+              <p className="text-red-600 text-sm mt-1">
                 {errors.deadlineHours}
               </p>
             )}
           </div>
 
-          <div className="bg-gradient-to-r from-amber-50/80 via-amber-50/60 to-orange-50/80 dark:from-amber-900/20 dark:via-amber-800/20 dark:to-orange-900/20 border border-amber-200/50 dark:border-amber-800/50 rounded-2xl p-6">
-            <h4 className="text-amber-800 dark:text-amber-200 font-bold text-lg mb-2">
+          <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4">
+            <h4 className="font-semibold text-amber-800 dark:text-amber-200 mb-2">
               How It Works
             </h4>
             <ul className="text-amber-700 dark:text-amber-300 text-sm space-y-1">
+              <li>• Check in before the deadline to keep your switch active</li>
               <li>
-                • You must check in before the deadline to keep the switch
-                active
+                • If you don't check in, your beneficiary can claim the funds
               </li>
+              <li>• You can add more funds and extend the deadline anytime</li>
               <li>
-                • If you don't check in, the beneficiary can claim all funds
-              </li>
-              <li>
-                • You can deposit additional funds and extend the deadline
-                anytime
-              </li>
-              <li>
-                • You can cancel the switch and withdraw funds before deadline
+                • Cancel anytime to withdraw your funds before the deadline
               </li>
             </ul>
           </div>
 
+          {errors.general && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              <p className="text-red-800 dark:text-red-200 text-sm">
+                {errors.general}
+              </p>
+            </div>
+          )}
+
           {error && (
-            <div className="bg-gradient-to-r from-red-50/80 to-red-50/80 dark:from-red-900/20 dark:to-red-900/20 border border-red-200/50 dark:border-red-800/50 rounded-2xl p-6">
-              <p className="text-red-800 dark:text-red-200 font-bold">Error</p>
-              <p className="text-red-700 dark:text-red-300 text-sm">
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              <p className="text-red-800 dark:text-red-200 text-sm">
                 {error.message}
               </p>
             </div>
@@ -523,7 +521,7 @@ export function InheritanceForm() {
           <Button
             type="submit"
             disabled={isPending}
-            className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-6 text-lg rounded-2xl"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg"
           >
             {isPending
               ? "Creating Switch..."

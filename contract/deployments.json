@@ -64,5 +64,38 @@
     "gasUsed": "17273360",
     "timestamp": "2025-09-17T23:42:37.700Z",
     "constructorArgs": []
+  },
+  {
+    "network": "somnia-testnet",
+    "contractName": "InheritanceCore",
+    "contractAddress": "0x5A6F859b3fB59eaA91F02FDE8833DD47d79B394B",
+    "deployer": "0xc448CA6aC246Ec8D4E45947331eA3A435b40744B",
+    "deploymentTxHash": "0x09c3409f0beeea0f790e9b8bb1f626ed7c08f2766fb1397a5006ead653b92779",
+    "blockNumber": 179370175,
+    "gasUsed": "17273360",
+    "timestamp": "2025-09-18T06:43:49.826Z",
+    "constructorArgs": []
+  },
+  {
+    "network": "somnia-testnet",
+    "contractName": "InheritanceCore",
+    "contractAddress": "0x80E54e3eDC1699b514A50B3B35F412bF3F9672Aa",
+    "deployer": "0xc448CA6aC246Ec8D4E45947331eA3A435b40744B",
+    "deploymentTxHash": "0x0ec2bb7c322e34c76ac7a657688c6c1a2a00982113664794b610c2faf3fa0ff3",
+    "blockNumber": 179378288,
+    "gasUsed": "17273360",
+    "timestamp": "2025-09-18T06:57:26.154Z",
+    "constructorArgs": []
+  },
+  {
+    "network": "somnia-testnet",
+    "contractName": "InheritanceCore",
+    "contractAddress": "0x1ED0dC9B80B9396b3D82BC2723f2539a83b96789",
+    "deployer": "0xc448CA6aC246Ec8D4E45947331eA3A435b40744B",
+    "deploymentTxHash": "0xf9922403a3c48ff635cb00e274717d7f559ad60c98363c1a96889bdc0376770d",
+    "blockNumber": 179541683,
+    "gasUsed": "17273360",
+    "timestamp": "2025-09-18T11:31:23.771Z",
+    "constructorArgs": []
   }
 ]
