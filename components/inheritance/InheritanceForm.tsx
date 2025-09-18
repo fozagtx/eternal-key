@@ -36,7 +36,7 @@ export function InheritanceForm() {
   const [formData, setFormData] = useState({
     beneficiaryAddress: "",
     depositAmount: "0.01",
-    deadlineHours: "24",
+    deadlineHours: "0.0042", // 15 seconds in hours (15/3600)
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
