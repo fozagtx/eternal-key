@@ -56,7 +56,7 @@ export function Dashboard() {
         </div>
 
         {/* Main Content - Enhanced Inheritance Form */}
-        <EnhancedInheritanceForm />
+        <InheritanceForm />
       </div>
     </div>
   );
