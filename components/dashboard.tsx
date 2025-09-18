@@ -2,7 +2,7 @@
 
 import { useAccount } from "wagmi";
 import { ConnectKitButton } from "connectkit";
-import { EnhancedInheritanceForm } from "@/components/inheritance/EnhancedInheritanceForm";
+import { InheritanceForm } from "@/components/inheritance/InheritanceForm";
 
 export function Dashboard() {
   const { address, isConnected } = useAccount();

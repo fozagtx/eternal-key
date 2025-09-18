@@ -13,7 +13,7 @@ import {
 } from "@/hooks/useInheritanceContract";
 import { SwitchStatus } from "@/lib/contracts";
 
-export function EnhancedInheritanceForm() {
+export function InheritanceForm() {
   const { address } = useAccount();
   const {
     initializeSwitch,
